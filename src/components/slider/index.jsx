@@ -20,13 +20,14 @@ function Slider(props) {
       setSliderSwiper(sliderSwiper);
     }
   }, [bannerList.length, sliderSwiper]);
+  console.log('bannerList', bannerList);
   return (
     <SliderContainer>
     {/* 背景红色遮罩 */}
     <div className="before"></div>
       <div className="slider-container">
         <div className="swiper-wrapper">
-          {bannerList &&
+          {bannerList && Array.isArray(bannerList) && 
             bannerList.map((slider = {}, index) => (
               <div className="swiper-slide" key={slider.imageUrl + index}>
                 <div className="slider-nav">

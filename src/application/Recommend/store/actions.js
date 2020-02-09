@@ -19,11 +19,22 @@ export const changeRecommendList = (data) => ({
     data: fromJS(data)
 });
 
+// 更改加载动画显示状态
+export const changeLoading = data => {
+    return ({
+        type: actionTypes.CHANGE_ENTER_LOADING,
+        data
+    })
+};
+
 // 获取banner列表
 export const getBannerList = () => async (dispatch) => {
     try {
         const data = await getBannerRequest();
+        console.log('getBannerList data', data);
         dispatch(changeBannerList(data.banners))
+        // 隐藏加载动画
+        dispatch(changeLoading(false));
     } catch (error) {
         console.log('获取banner列表失败', error);
     }
@@ -34,6 +45,8 @@ export const getRecommendList = () => async (dispatch) => {
     try {
         const data = await getRecommendListRequest();
         dispatch(changeRecommendList(data.result));
+        // 隐藏加载动画
+        dispatch(changeLoading(false));
     } catch (error) {
         console.log('获取推荐列表失败', error);
     }

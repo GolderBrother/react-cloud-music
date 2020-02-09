@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useImperativeHandle, memo } from "react";
+import React, { useState, useEffect, useRef, useImperativeHandle, memo, forwardRef } from "react";
 import BetterScroll from "better-scroll";
 import { ScrollContainer } from "./style";
 import PropTypes from "prop-types";
@@ -95,7 +95,7 @@ const Scroll = forwardRef((props, ref) => {
     // 给外界暴露 getBScroll 方法，提供 betterScroll 实例
     getBScroll() {
       if (bScroll) {
-        return getBScroll;
+        return bScroll;
       }
     }
   }));
