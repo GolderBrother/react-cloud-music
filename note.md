@@ -8,8 +8,8 @@ part 5 done
 
 port 7 done
 
-port 10 done
+port 11 done
 
 ### next
 
-[歌手列表 2: 歌手 List 开发，为后面起飞做铺垫-传送门](https://juejin.im/book/5da96626e51d4524ba0fd237/section/5da97569e51d4578200ccc68)
+[歌手列表3:上拉/下拉加载及优化，全面助力移动web开发-传送门](https://juejin.im/book/5da96626e51d4524ba0fd237/section/5da975b7518825092e1605c3)
