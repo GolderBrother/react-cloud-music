@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import LazyLoad, { forceCheck } from 'react-lazyload';
 import Horizen from "../../baseUI/horizen-item";
 import Scroll from "../../baseUI/scroll";
+import Loading from "../../baseUI/loading";
 import { categoryTypes, alphaTypes } from "../../api/config";
 import { NavContainer, ListContainer, List, ListItem } from "./style";
 import {
@@ -20,7 +22,8 @@ function Singers(props) {
   const [category, setCategory] = useState("");
   // 首字母category
   const [alpha, setAlpha] = useState("");
-  const { getHotSingerListDispatch, updateDispatch } = props;
+  const { enterLoading = false, singerList = [], pageCount = 0, pullUpLoading, pullDownLoading } = props;
+  const { getHotSingerListDispatch, updateDispatch, pullUpRefreshDispatch ,pullDownRefreshDispatch } = props;
   const handleUpdateCategory = val => {
     setCategory(val);
     updateDispatch(val, alpha);
@@ -29,32 +32,38 @@ function Singers(props) {
     setAlpha(val);
     updateDispatch(category, val);
   };
-  const singerList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(item => ({
-    picUrl:
-      "https://p2.music.126.net/uTwOm8AEFFX_BYHvfvFcmQ==/109951164232057952.jpg",
-    name: "隔壁老樊",
-    accountId: 277313426
-  }));
+
   useEffect(() => {
     getHotSingerListDispatch();
   }, []);
+  const handlePullUp = () => {
+    const hot = category === '';
+    pullUpRefreshDispatch(category, alpha, hot, pageCount);
+  }
+  const handlePullDown = () => {
+    pullDownRefreshDispatch(category, alpha);
+  }
   // 渲染歌手列表数据
-  const renderSingerList = () => {
+  const singerListJS = singerList.toJS();
+  const renderSingerList = singerList => {
     return (
       <List>
-        {singerList.map((item, index) => (
-          <ListItem key={`${item.accountId}_${index}`}>
-            <div className="img_wrapper">
-              <img
-                src={`${item.picUrl}?param=300x300`}
-                width="100%"
-                height="100%"
-                alt="music"
-              />
-            </div>
-            <span className="name">{item.name}</span>
-          </ListItem>
-        ))}
+        {singerList &&
+          singerList.map((item, index) => (
+            <ListItem key={`${item.accountId}_${index}`}>
+              <div className="img_wrapper">
+                <LazyLoad placeholder={<img src={require('./imgs/singer.png')} width="100%" height="100%" alt="img" />}>
+                  <img
+                    src={`${item.picUrl}?param=300x300`}
+                    width="100%"
+                    height="100%"
+                    alt="music"
+                  />
+                </LazyLoad>
+              </div>
+              <span className="name">{item.name}</span>
+            </ListItem>
+          ))}
       </List>
     );
   };
@@ -75,7 +84,16 @@ function Singers(props) {
         ></Horizen>
       </NavContainer>
       <ListContainer>
-        <Scroll>{renderSingerList()}</Scroll>
+        <Loading show={enterLoading} />
+        <Scroll
+          onScroll={forceCheck} 
+          pullUpLoading={pullUpLoading} 
+          pullDownLoading={pullDownLoading}
+          pullUp={handlePullUp}
+          pullDown={handlePullDown}
+        >
+          {renderSingerList(singerListJS)}
+        </Scroll>
       </ListContainer>
     </div>
   );
@@ -83,11 +101,11 @@ function Singers(props) {
 const mapStateToProps = state => ({
   // 不要在这里将数据 toJS, 因为每次 toJS 都产生不一样的引用
   // 不然每次 diff 比对 props 的时候都是不一样的引用，还是导致不必要的重渲染，属于滥用 immutable
-  singerList: state.getIn("singers", "singerList"),
-  enterLoading: state.getIn("singers", "enterLoading"),
-  pullUpLoading: state.getIn("singers", "pullUpLoading"),
-  pullDownLoading: state.getIn("singers", "pullDownLoading"),
-  pageCount: state.getIn("singers", "pageCount")
+  singerList: state.getIn(["singers", "singerList"]),
+  enterLoading: state.getIn(["singers", "enterLoading"]),
+  pullUpLoading: state.getIn(["singers", "pullUpLoading"]),
+  pullDownLoading: state.getIn(["singers", "pullDownLoading"]),
+  pageCount: state.getIn(["singers", "pageCount"])
 });
 const mapDispatchToProps = dispatch => ({
   getHotSingerListDispatch: () => {

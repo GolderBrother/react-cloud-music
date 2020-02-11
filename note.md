@@ -10,6 +10,8 @@ port 7 done
 
 port 11 done
 
+port 12 done 2020.2.11
+
 ### next
 
-[歌手列表3:上拉/下拉加载及优化，全面助力移动web开发-传送门](https://juejin.im/book/5da96626e51d4524ba0fd237/section/5da975b7518825092e1605c3)
+[如何用 hooks 实现一个 Redux?【中途来波骚操作】-传送门](https://juejin.im/book/5da96626e51d4524ba0fd237/section/5da976d9e51d45249246ef40)

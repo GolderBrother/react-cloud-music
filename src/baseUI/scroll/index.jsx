@@ -1,7 +1,19 @@
-import React, { useState, useEffect, useRef, useImperativeHandle, memo, forwardRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+  useImperativeHandle,
+  memo,
+  forwardRef
+} from "react";
 import BetterScroll from "better-scroll";
-import { ScrollContainer } from "./style";
+import { ScrollContainer, PullUpLoading, PullDownLoading } from "./style";
 import PropTypes from "prop-types";
+import Loading from "../loading/index";
+import LoadingV2 from "../loadingV2/index";
+import { debounce } from "../../api/utils";
 const Scroll = forwardRef((props, ref) => {
   //better-scroll 实例对象
   const [bScroll, setBScroll] = useState(null);
@@ -18,6 +30,16 @@ const Scroll = forwardRef((props, ref) => {
     bounceDown
   } = props;
   const { onScroll, pullUp, pullDown } = props;
+  const pullUpDebounce = useMemo(() => {
+    return debounce(pullUp, 300);
+  }, [pullUp]);
+  // 千万注意，这里不能省略依赖，
+  // 不然拿到的始终是第一次 pullUp 函数的引用，相应的闭包作用域变量都是第一次的，产生闭包陷阱。下同。
+  // 加了依赖后,每次更新才是新的引用,否则一直没变化
+  // 这样当我们频繁上拉下拉的时候就不会频繁触发回调了
+  const pullDownDebounce = useMemo(() => {
+    return debounce(pullDown, 300);
+  }, [pullDown]);
   useEffect(() => {
     // 初始化BetterScroll
     const bScroll = new BetterScroll(scrollContaninerRef.current, {
@@ -59,7 +81,7 @@ const Scroll = forwardRef((props, ref) => {
     bScroll.on("scrollEnd", () => {
       // 判断是否滑动到了底部
       if (bScroll.y <= bScroll.maxScrollY + 100) {
-        pullUp();
+        pullUpDebounce();
       }
     });
     return () => {
@@ -74,7 +96,7 @@ const Scroll = forwardRef((props, ref) => {
     bScroll.on("touchEnd", () => {
       // 判断是否下拉了一段距离
       if (bScroll.y > 50) {
-        pullDown();
+        pullDownDebounce();
       }
     });
     return () => {
@@ -99,9 +121,23 @@ const Scroll = forwardRef((props, ref) => {
       }
     }
   }));
+  const pullUpDisplayStyle = pullUpLoading
+    ? { display: "" }
+    : { display: "none" };
+  const pullDownDisplayStyle = pullDownLoading
+    ? { display: "" }
+    : { display: "none" };
   return (
     <ScrollContainer ref={scrollContaninerRef}>
       {props.children}
+      {/* 滑到底部加载动画(上拉加载) */}
+      <PullUpLoading style={pullUpDisplayStyle}>
+        <Loading></Loading>
+      </PullUpLoading>
+      {/* 顶部向下滑动画(下拉刷新) */}
+      <PullDownLoading style={pullDownDisplayStyle}>
+        <LoadingV2></LoadingV2>
+      </PullDownLoading>
     </ScrollContainer>
   );
 });

@@ -61,11 +61,10 @@ export const refreshMoreHotSingerList = () => {
         try {
             const pageCount = getState().getIn(['singers', 'pageCount']);
             const res = await getHotSingerListRequest(pageCount);
-            console.log('refreshMoreHotSingerList res', res);
             const {
                 artists = []
             } = res;
-            const oldSingerList = getState().getIn(['singers', 'singerList']);
+            const oldSingerList = getState().getIn(['singers', 'singerList']).toJS();;
             const newList = [...oldSingerList, ...artists];
             dispatch(changeSingerList(newList));
             dispatch(changePullUpLoading(false))
@@ -80,6 +79,7 @@ export const getSingerListByCate = (category = '', alpha = '') => {
     return async (dispatch, getState) => {
         try {
             const res = await getSingerCategoryRequest(category, alpha, 0);
+            console.log('getSingerListByCate res', res);
             const {
                 artists = []
             } = res;
@@ -96,14 +96,15 @@ export const getSingerListByCate = (category = '', alpha = '') => {
 export const refreshMoreSingerListByCate = (category = '', alpha = '') => {
     return async (dispatch, getState) => {
         try {
-            const res = await getSingerCategoryRequest(category, alpha, 0);
+            const pageCount = getState().getIn(['singers', 'pageCount']);
+            const res = await getSingerCategoryRequest(category, alpha, pageCount);
             const {
                 artists = []
             } = res;
-            const oldSingerList = getState().getIn(['singers', 'singerList']);
+            const oldSingerList = getState().getIn(['singers', 'singerList']).toJS();;
             const newList = [...oldSingerList, ...artists];
             dispatch(changeSingerList(newList));
-            dispatch(changePullUpLoading(newList));
+            dispatch(changePullUpLoading(false));
         } catch (error) {
             console.log('获取对应类别的歌手歌手数据失败', error);
         }
