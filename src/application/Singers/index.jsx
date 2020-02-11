@@ -5,9 +5,11 @@ import { categoryTypes, alphaTypes } from "../../api/config";
 import { NavContainer, ListContainer, List, ListItem } from "./style";
 import {
   getHotSingerList,
+  getSingerListByCate,
   changePageCount,
   changeEnterLoading,
   changePullUpLoading,
+  refreshMoreHotSingerList,
   refreshMoreSingerListByCate,
   changePullDownLoading
 } from "./store/actions";
