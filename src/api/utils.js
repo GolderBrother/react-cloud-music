@@ -15,13 +15,22 @@ export const getCount = (count = 0) => {
 }
 
 // 防抖函数: 一段时间内触发多次,只执行最后一次,因为还没到规定时间内触发的,就清空定时器
-export function debounce(func, delay = 300){
+export function debounce(func, delay = 300) {
     let timer;
-    return function(){
-        if(timer) clearTimeout(timer);
+    return function () {
+        if (timer) clearTimeout(timer);
         timer = setTimeout(() => {
             func.apply(this, [...arguments]);
             clearTimeout(timer);
         }, delay);
+    }
+}
+
+// 处理数据，找出第一个没有歌名的排行榜的索引
+export function filterIndex(rankList = []) {
+    for (let i = 0, len = rankList.length; i < len; i++) {
+        if (rankList[i].tracks.length && !rankList[i + 1].tracks.length) {
+            return i + 1;
+        }
     }
 }

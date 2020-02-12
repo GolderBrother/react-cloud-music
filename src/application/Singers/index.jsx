@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import LazyLoad, { forceCheck } from 'react-lazyload';
+import React, { useState, useEffect, useContext } from "react";
+import LazyLoad, { forceCheck } from "react-lazyload";
 import Horizen from "../../baseUI/horizen-item";
 import Scroll from "../../baseUI/scroll";
 import Loading from "../../baseUI/loading";
@@ -16,33 +16,53 @@ import {
   changePullDownLoading
 } from "./store/actions";
 import { connect } from "react-redux";
+import { CategoryDataContext, changeCategory, changeAlpha } from "./data";
 // 歌手列表组件
 function Singers(props) {
+  const { data, dispatch } = useContext(CategoryDataContext);
+  const { category, alpha } = (data && data.toJS()) || {};
   // 分类
-  const [category, setCategory] = useState("");
+  // const [category, setCategory] = useState("");
   // 首字母category
-  const [alpha, setAlpha] = useState("");
-  const { enterLoading = false, singerList = [], pageCount = 0, pullUpLoading, pullDownLoading } = props;
-  const { getHotSingerListDispatch, updateDispatch, pullUpRefreshDispatch ,pullDownRefreshDispatch } = props;
+  // const [alpha, setAlpha] = useState("");
+  const {
+    enterLoading = false,
+    singerList = [],
+    pageCount = 0,
+    pullUpLoading,
+    pullDownLoading
+  } = props;
+  const {
+    getHotSingerListDispatch,
+    updateDispatch,
+    pullUpRefreshDispatch,
+    pullDownRefreshDispatch
+  } = props;
   const handleUpdateCategory = val => {
-    setCategory(val);
+    // setCategory(val);
+    dispatch(changeCategory(val));
     updateDispatch(val, alpha);
   };
   const handleUpdateAlpha = val => {
-    setAlpha(val);
+    // setAlpha(val);
+    dispatch(changeAlpha(val));
     updateDispatch(category, val);
   };
 
   useEffect(() => {
-    getHotSingerListDispatch();
+    // 增加判断逻辑，等歌手列表不为空时，就不发请求，同时记忆之前的分类
+    if(!singerList.size) {
+      getHotSingerListDispatch();
+    }
   }, []);
+
   const handlePullUp = () => {
-    const hot = category === '';
+    const hot = category === "";
     pullUpRefreshDispatch(category, alpha, hot, pageCount);
-  }
+  };
   const handlePullDown = () => {
     pullDownRefreshDispatch(category, alpha);
-  }
+  };
   // 渲染歌手列表数据
   const singerListJS = singerList.toJS();
   const renderSingerList = singerList => {
@@ -52,7 +72,16 @@ function Singers(props) {
           singerList.map((item, index) => (
             <ListItem key={`${item.accountId}_${index}`}>
               <div className="img_wrapper">
-                <LazyLoad placeholder={<img src={require('./imgs/singer.png')} width="100%" height="100%" alt="img" />}>
+                <LazyLoad
+                  placeholder={
+                    <img
+                      src={require("./imgs/singer.png")}
+                      width="100%"
+                      height="100%"
+                      alt="img"
+                    />
+                  }
+                >
                   <img
                     src={`${item.picUrl}?param=300x300`}
                     width="100%"
@@ -86,8 +115,8 @@ function Singers(props) {
       <ListContainer>
         <Loading show={enterLoading} />
         <Scroll
-          onScroll={forceCheck} 
-          pullUpLoading={pullUpLoading} 
+          onScroll={forceCheck}
+          pullUpLoading={pullUpLoading}
           pullDownLoading={pullDownLoading}
           pullUp={handlePullUp}
           pullDown={handlePullDown}

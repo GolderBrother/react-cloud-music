@@ -20,3 +20,6 @@ export const getHotSingerListRequest = (offset) => axiosInstance.get(`/top/artis
  * @param {*} offset 偏移数量
  */
 export const getSingerCategoryRequest = (cate, alpha = '', offset) => axiosInstance.get(`/artist/list?cat=${cate}&initial=${alpha.toLowerCase()}&offset=${offset}`);
+
+// 获取所有榜单内容
+export const getRankListRequest = () => axiosInstance.get(`/toplist/detail`);
