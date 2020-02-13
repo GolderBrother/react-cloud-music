@@ -21,10 +21,12 @@ export const changePageCount = data => ({
 });
 
 // 上拉加载
-export const changePullUpLoading = data => ({
-    type: actionTypes.CHANHE_PULLUP_LOADING,
-    data
-});
+export const changePullUpLoading = data => {
+    return ({
+        type: actionTypes.CHANHE_PULLUP_LOADING,
+        data
+    });
+}
 
 // 下拉刷新
 export const changePullDownLoading = data => ({
@@ -43,7 +45,6 @@ export const getHotSingerList = () => {
     return async (dispatch, getState) => {
         try {
             const res = await getHotSingerListRequest(0);
-            console.log('getHotSingerList res', res);
             const {
                 artists
             } = res;

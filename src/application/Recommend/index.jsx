@@ -8,6 +8,7 @@ import Scroll from "../../baseUI/scroll";
 // better-scroll 的原理并不复杂，就是在容器元素高度固定，当子元素高度超过容器元素高度时，通过 transfrom 动画产生滑动效果，因此它的使用原则就是外部容器必须是固定高度，不然没法滚动。而 Content 就是这个外部容器
 import { Content } from "./style";
 import * as recommendActions from "./store/actions";
+import { renderRoutes } from 'react-router-config';
 // 推荐组件
 function Recommend(props) {
   const { bannerList, recommendList, enterLoading } = props;
@@ -20,7 +21,6 @@ function Recommend(props) {
 
   const bannerListJS = bannerList ? bannerList.toJS() : [];
   const recommendListJS = recommendList ? recommendList.toJS() : [];
-  // TODO test
   return (
     <Content>
       {/* 滑动的时候，如何让下面相应的图片显示 */}
@@ -32,6 +32,9 @@ function Recommend(props) {
         </div>
       </Scroll>
       {enterLoading ? <Loading /> : null}
+      {/* 对路由配置原理的理解:具体来说就是 renderRoutes 方法。这个方法中传入参数为路由配置数组，我们在组件中调用这个方法后只能渲染一层路由，再深层的路由就无法渲染。  */}
+      {/* 所以将目前所在路由的下一层子路由加以渲染 */}
+      {renderRoutes(props.route.routes)}
     </Content>
   );
 }

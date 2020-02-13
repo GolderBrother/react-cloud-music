@@ -2,15 +2,20 @@ import React from "react";
 import LazyLoad from 'react-lazyload';  
 import { ListWrapper, List, ListItem } from "./style";
 import { getCount } from '../../api/utils';
+import { withRouter } from 'react-router-dom';
 function RecommendList(props) {
   const { recommendList = [] } = props;
+  // 进入详情页
+  const enterDetail = (id) => {
+    props.history.push(`/recommend/${id}`);
+  };
   return (
     <ListWrapper>
       <h1 className="title"> 推荐歌单 </h1>
       <List>
         {recommendList &&
           recommendList.map((item, index) => (
-            <ListItem key={item.id + index}>
+            <ListItem key={item.id + index} onClick={() => enterDetail(item.id)}>
               <div className="img_wrapper">
                 {/* 给图片上的图标和文字提供一个遮罩 */}
                 <div className="decorate"></div>
@@ -38,4 +43,5 @@ function RecommendList(props) {
   );
 }
 // memo跟pureComponent的区别在于只比对props, 不比对state
-export default React.memo(RecommendList);
+// withRouter 为了获取history变量
+export default React.memo(withRouter(RecommendList));

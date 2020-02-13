@@ -4,6 +4,7 @@ import Home from '../application/Home';
 import Rank from '../application/Rank';
 import Recommend from '../application/Recommend';
 import Singers from '../application/Singers';
+import Album from '../application/Album';
 
 const Routes = [{
     path: '/',
@@ -17,10 +18,18 @@ const Routes = [{
         component: Home
     }, {
         path: '/rank',
-        component: Rank
+        component: Rank,
+        routes: [{
+            path: '/rank/:id',
+            component: Album
+        }]
     }, {
         path: '/recommend',
-        component: Recommend
+        component: Recommend,
+        routes: [{
+            path: '/recommend/:id',
+            component: Album
+        }]
     }, {
         path: '/singers',
         component: Singers

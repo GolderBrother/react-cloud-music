@@ -121,21 +121,21 @@ const Scroll = forwardRef((props, ref) => {
       }
     }
   }));
-  const pullUpDisplayStyle = pullUpLoading
+  const PullUpDisplayStyle = pullUpLoading
     ? { display: "" }
     : { display: "none" };
-  const pullDownDisplayStyle = pullDownLoading
+  const PullDownDisplayStyle = pullDownLoading
     ? { display: "" }
     : { display: "none" };
   return (
     <ScrollContainer ref={scrollContaninerRef}>
       {props.children}
       {/* 滑到底部加载动画(上拉加载) */}
-      <PullUpLoading style={pullUpDisplayStyle}>
+      <PullUpLoading style={PullUpDisplayStyle}>
         <Loading></Loading>
       </PullUpLoading>
       {/* 顶部向下滑动画(下拉刷新) */}
-      <PullDownLoading style={pullDownDisplayStyle}>
+      <PullDownLoading style={PullDownDisplayStyle}>
         <LoadingV2></LoadingV2>
       </PullDownLoading>
     </ScrollContainer>

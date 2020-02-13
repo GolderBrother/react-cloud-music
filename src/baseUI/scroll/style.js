@@ -25,7 +25,7 @@ export const PullUpLoading = styled.div`
 
 export const PullDownLoading = styled.div`
   position: absolute;
-  top: 0px;
+  top: 0;
   left:0; 
   right:0;
   height: 30px;

@@ -64,12 +64,12 @@ function Singers(props) {
     pullDownRefreshDispatch(category, alpha);
   };
   // 渲染歌手列表数据
-  const singerListJS = singerList.toJS();
-  const renderSingerList = singerList => {
+  const renderSingerList = () => {
+    const singerListJS = singerList.toJS();
     return (
       <List>
-        {singerList &&
-          singerList.map((item, index) => (
+        {singerListJS &&
+          singerListJS.map((item, index) => (
             <ListItem key={`${item.accountId}_${index}`}>
               <div className="img_wrapper">
                 <LazyLoad
@@ -113,7 +113,6 @@ function Singers(props) {
         ></Horizen>
       </NavContainer>
       <ListContainer>
-        <Loading show={enterLoading} />
         <Scroll
           onScroll={forceCheck}
           pullUpLoading={pullUpLoading}
@@ -121,8 +120,9 @@ function Singers(props) {
           pullUp={handlePullUp}
           pullDown={handlePullDown}
         >
-          {renderSingerList(singerListJS)}
+          {renderSingerList()}
         </Scroll>
+        <Loading show={enterLoading} />
       </ListContainer>
     </div>
   );
@@ -137,7 +137,7 @@ const mapStateToProps = state => ({
   pageCount: state.getIn(["singers", "pageCount"])
 });
 const mapDispatchToProps = dispatch => ({
-  getHotSingerListDispatch: () => {
+  getHotSingerListDispatch() {
     dispatch(getHotSingerList());
   },
   updateDispatch(category, alpha) {

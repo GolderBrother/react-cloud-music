@@ -1,3 +1,4 @@
+import { RankTypes } from './config';
 /**
  * 计数
  * @param {number} count 
@@ -33,4 +34,12 @@ export function filterIndex(rankList = []) {
             return i + 1;
         }
     }
+}
+
+// 根据name查找排行榜的编号
+export function findRankNO(name){
+    for (const key in RankTypes) {
+        if(RankTypes[key] === name) return key
+    }
+    return null;
 }

@@ -7,7 +7,7 @@ import { GlobalStyle } from "./style.js";
 import { IconStyle } from "./assets/iconfont/iconfont";
 import store from "./store";
 import { Data } from "./application/Singers/data";
-function App() {
+function App(props) {
   return (
     <Provider store={store}>
       <HashRouter>
