@@ -4,7 +4,7 @@ import { CSSTransition } from "react-transition-group";
 import Header from "../../baseUI/header";
 import Scroll from "../../baseUI/scroll";
 import GlobalStyle from '../../assets/global-style';
-import { getName } from '../../api/utils';
+// import { getName } from '../../api/utils';
 export const HEADER_HEIGHT = 45;
 function Album(props) {
   const [title, setTitle] = useState("歌单");

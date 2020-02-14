@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import GlobalStyle from '../../assets/global-style';
+
 export const Container = styled.div`
   position: fixed;
   top: 0;
