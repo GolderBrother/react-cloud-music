@@ -1,4 +1,6 @@
-import { RankTypes } from './config';
+import {
+    RankTypes
+} from './config';
 /**
  * 计数
  * @param {number} count 
@@ -37,9 +39,19 @@ export function filterIndex(rankList = []) {
 }
 
 // 根据name查找排行榜的编号
-export function findRankNO(name){
+export function findRankNO(name) {
     for (const key in RankTypes) {
-        if(RankTypes[key] === name) return key
+        if (RankTypes[key] === name) return key
     }
     return null;
+}
+
+// 处理歌手列表拼接歌手名字
+export const getName = (list) => {
+    let str = "";
+    list.forEach((item, index) => {
+        str += index === 0 ? item.name : "/" + item.name;
+        // return item;
+    });
+    return str;
 }
