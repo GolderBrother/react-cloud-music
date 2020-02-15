@@ -55,3 +55,9 @@ export const getName = (list) => {
     });
     return str;
 }
+
+/**
+ * 判断是否为空对象
+ * @param {*} obj 对象
+ */
+export const isPlainObject = obj => !obj || Object.keys(obj).length === 0;

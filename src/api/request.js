@@ -23,3 +23,9 @@ export const getSingerCategoryRequest = (cate, alpha = '', offset) => axiosInsta
 
 // 获取所有榜单内容
 export const getRankListRequest = () => axiosInstance.get(`/toplist/detail`);
+
+/**
+ * 获取歌单详情 歌单 id
+ * @param {number} id 
+ */
+export const getAlbumDetailRequest = (id) => axiosInstance.get(`/playlist/detail?id=${id}`)

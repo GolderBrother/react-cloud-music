@@ -31,12 +31,11 @@ export const changeLoading = data => {
 export const getBannerList = () => async (dispatch) => {
     try {
         const data = await getBannerRequest();
-        console.log('getBannerList data', data);
         dispatch(changeBannerList(data.banners))
         // 隐藏加载动画
         dispatch(changeLoading(false));
     } catch (error) {
-        console.log('获取banner列表失败', error);
+        console.log('获取banner列表失败:', error);
     }
 };
 
@@ -48,6 +47,6 @@ export const getRecommendList = () => async (dispatch) => {
         // 隐藏加载动画
         dispatch(changeLoading(false));
     } catch (error) {
-        console.log('获取推荐列表失败', error);
+        console.log('获取推荐列表失败:', error);
     }
 };

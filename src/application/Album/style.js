@@ -8,8 +8,7 @@ export const Container = styled.div`
   right: 0;
   bottom: 0;
   z-index: 1000;
-  background: red;
-  // background: ${GlobalStyle["background-color"]};
+  background: ${GlobalStyle["background-color"]};
   transform-origin: right bottom;
   // 切入动画样式, 思路: 设定 transfrom 的固定点，接下来的动画都是绕这个点旋转或平移;然后以Z为坐标轴旋转
   &.fly-enter, &.fly-appear{
@@ -47,7 +46,7 @@ export const TopDesc = styled.div`
     height: 100%;
     filter: blur(20px);
     background: url(${props => props.background}) 0px 0px / 100% 100% no-repeat;
-    background-position: 0px 0px;
+    // background-position: 0px 0px;
     .filter {
       position: absolute;
       z-index: 10;
@@ -68,7 +67,7 @@ export const TopDesc = styled.div`
       width: 100%;
       height: 35px;
       border-radius: 3px;
-      background: linear-gradient(rgba(110, 110, 110, 0.4), rgba(255, 255, 255, 0));
+      background: linear-gradient (hsla (0,0%,43%,.4),hsla (0,0%,100%,0));
     }
     img {
       width: 120px;
@@ -103,10 +102,10 @@ export const TopDesc = styled.div`
     .title {
       max-height: 70px;
       text-overflow: ellipsis;
-      color: rgb(241, 241, 241);
+      color: ${GlobalStyle["font-color-light"]};
       font-weight: 700;
       line-height: 1.5;
-      font-size: 16px;
+      font-size: ${GlobalStyle["font-size-l"]};
       overflow: hidden;
     }
     .person {
@@ -115,7 +114,7 @@ export const TopDesc = styled.div`
         width: 20px;
         height: 20px;
         margin-right: 5px;
-        .img {
+        img {
           width: 100%;
           height: 100%;
           border-radius: 50%;
@@ -123,8 +122,8 @@ export const TopDesc = styled.div`
       }
       .name {
         line-height: 20px;
-        font-size: 14px;
-        color: rgb(187, 168, 168);
+        font-size: ${GlobalStyle["font-size-m"]};
+        color: ${GlobalStyle["font-color-desc-v2"]};
       }
     }
   }
@@ -139,13 +138,14 @@ export const Menu = styled.div`
   padding: 0px 30px 20px;
   margin: -100px 0px 0px;
   >div {
-    position: relative;
     display: flex;
-    -webkit-box-pack: justify;
-    justify-content: space-between;
-    box-sizing: border-box;
-    padding: 0px 30px 20px;
-    margin: -100px 0px 0px;
+    flex-direction: column;
+    line-height: 20px;
+    text-align: center;
+    z-index: 1000;
+    font-weight: 500;
+    font-size: ${GlobalStyle["font-size-s"]};
+    color: ${GlobalStyle["font-color-light"]};
     .iconfont {
       font-size: 20px;
     }
@@ -166,7 +166,7 @@ export const SongWrapper = styled.div`
     .play_all {
       display: inline-block;
       line-height: 24px;
-      color: ${style ["font-color-desc"]};
+      color: ${GlobalStyle["font-color-desc"]};
       .iconfont {
         font-size: 24px;
         margin-right: 10px;
@@ -176,8 +176,8 @@ export const SongWrapper = styled.div`
         vertical-align: top;
       }
       .sum {
-        font-size: ${style ["font-size-s"]};
-        color: ${style ["font-color-desc-v2"]};
+        font-size: ${GlobalStyle["font-size-s"]};
+        color: ${GlobalStyle["font-color-desc-v2"]};
       }
     }
     .add_list, .isCollected {
@@ -201,7 +201,7 @@ export const SongWrapper = styled.div`
         margin: 0px 5px 0px 10px;
       }
       span {
-        font-size: 14px;
+        font-size: ${GlobalStyle["font-size-m"]};
         line-height: 34px;
       }
     }
@@ -237,16 +237,16 @@ export const SongList = styled.ul`
       white-space: nowrap;
       flex: 1 1 0%;
       padding: 5px 0px;
-      border-bottom: 1px solid ${style ["border-color"]};
+      border-bottom: 1px solid ${GlobalStyle["border-color"]};
       overflow: hidden;
       ${GlobalStyle.noWrap()}
       > span {
         ${GlobalStyle.noWrap()}
         &:first-child {
-          color: ${style ["font-color-desc"]};
+          color: ${GlobalStyle["font-color-desc"]};
         }
         &:last-child {
-          font-size: ${style["font-size-s"]};
+          font-size: ${GlobalStyle["font-size-s"]};
           color: #bba8a8;
         }
       }

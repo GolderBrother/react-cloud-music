@@ -17,22 +17,16 @@ function Rank(props) {
   useEffect(() => {
     setTimeout(() => {
       if (!rankList.length) getRankListDispatch();
-      console.log("props", props);
     });
     // eslint-disable-next-line
   }, []);
-  // TODO 有问题 目前数据为空
-  console.log("rankList", rankList);
   // 排行榜单分为两个部分，一部分是官方榜，另一部分是全球榜。官方榜单数据有 tracks 数组，存放部分歌曲信息，而全球榜没
   const globalStartIndex = filterIndex(rankList);
   // 官方榜
   const officialList = rankList.slice(0, globalStartIndex);
   // 全球榜
   const globalList = rankList.slice(globalStartIndex);
-  console.log("officialList", officialList);
-  console.log("globalList", globalList);
   const enterDetail = name => () => {
-    console.log("enterDetail name", name);
     const rankKey = findRankNO(name);
     if (rankKey === null) {
       alert("暂无相关数据");

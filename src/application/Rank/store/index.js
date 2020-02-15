@@ -58,7 +58,7 @@ export const getRankList = () => async (dispatch, getState) => {
         // dispatch(changeRankList(list));
         // dispatch(changeLoading(false))
     } catch (error) {
-        console.log('getRankListRequest error', error);
+        console.log('获取排行榜单数据失败: ', error);
     }
 }
 

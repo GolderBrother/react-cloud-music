@@ -52,7 +52,7 @@ export const getHotSingerList = () => {
             dispatch(changeEnterLoading(false));
             dispatch(changePullDownLoading(false));
         } catch (error) {
-            console.log('获取热门歌手数据失败', error);
+            console.log('获取热门歌手数据失败:', error);
         }
     }
 }
@@ -70,7 +70,7 @@ export const refreshMoreHotSingerList = () => {
             dispatch(changeSingerList(newList));
             dispatch(changePullUpLoading(false))
         } catch (error) {
-            console.log('获取热门歌手数据失败', error);
+            console.log('获取热门歌手数据失败:', error);
         }
     }
 }
@@ -80,7 +80,6 @@ export const getSingerListByCate = (category = '', alpha = '') => {
     return async (dispatch, getState) => {
         try {
             const res = await getSingerCategoryRequest(category, alpha, 0);
-            console.log('getSingerListByCate res', res);
             const {
                 artists = []
             } = res;
@@ -88,7 +87,7 @@ export const getSingerListByCate = (category = '', alpha = '') => {
             dispatch(changeEnterLoading(false));
             dispatch(changePullDownLoading(false));
         } catch (error) {
-            console.log('获取对应类别的歌手歌手数据失败', error);
+            console.log('获取对应类别的歌手数据失败:', error);
         }
     }
 }
@@ -107,7 +106,7 @@ export const refreshMoreSingerListByCate = (category = '', alpha = '') => {
             dispatch(changeSingerList(newList));
             dispatch(changePullUpLoading(false));
         } catch (error) {
-            console.log('获取对应类别的歌手歌手数据失败', error);
+            console.log('获取对应类别的歌手歌手数据失败:', error);
         }
     }
 }

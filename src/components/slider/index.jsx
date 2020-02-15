@@ -20,7 +20,6 @@ function Slider(props) {
       setSliderSwiper(sliderSwiper);
     }
   }, [bannerList.length, sliderSwiper]);
-  console.log('bannerList', bannerList);
   return (
     <SliderContainer>
     {/* 背景红色遮罩 */}
