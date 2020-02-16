@@ -16,6 +16,7 @@ import {
   changePullDownLoading
 } from "./store/actions";
 import { connect } from "react-redux";
+import { renderRoutes } from 'react-router-config';
 import { CategoryDataContext, changeCategory, changeAlpha } from "./data";
 // 歌手列表组件
 function Singers(props) {
@@ -63,6 +64,10 @@ function Singers(props) {
   const handlePullDown = () => {
     pullDownRefreshDispatch(category, alpha);
   };
+  // 进入详情页
+  const enterDetail = (id) => {
+    props.history.push(`/singers/${id}`)
+  }
   // 渲染歌手列表数据
   const renderSingerList = () => {
     const singerListJS = singerList.toJS();
@@ -70,7 +75,7 @@ function Singers(props) {
       <List>
         {singerListJS &&
           singerListJS.map((item, index) => (
-            <ListItem key={`${item.accountId}_${index}`}>
+            <ListItem key={`${item.accountId}_${index}`} onClick={() => enterDetail(item.id)}>
               <div className="img_wrapper">
                 <LazyLoad
                   placeholder={
@@ -124,6 +129,8 @@ function Singers(props) {
         </Scroll>
         <Loading show={enterLoading} />
       </ListContainer>
+      {/* 渲染子路由 */}
+      {renderRoutes(props.route.routes)}
     </div>
   );
 }

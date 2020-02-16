@@ -26,12 +26,8 @@ function Rank(props) {
   const officialList = rankList.slice(0, globalStartIndex);
   // 全球榜
   const globalList = rankList.slice(globalStartIndex);
-  const enterDetail = name => () => {
-    const rankKey = findRankNO(name);
-    if (rankKey === null) {
-      alert("暂无相关数据");
-      return;
-    }
+  const enterDetail = item => () => {
+    props.history.push(`/rank/${item.id}`)
   };
   const renderSongList = list => {
     return list && list.length ? (
@@ -52,7 +48,7 @@ function Rank(props) {
             <ListItem
               key={`${item.coverImgId}_${index}`}
               tracks={item.tracks}
-              onClick={enterDetail(item.name)}
+              onClick={enterDetail(item)}
             >
               <div className="img_wrapper">
                 <img src={item.coverImgUrl} alt="" />
