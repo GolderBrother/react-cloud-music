@@ -12,11 +12,13 @@ part 11 done
 
 part 12 done 2020.2.11
 
-part 18 done 2020.2.16
+part 18 done 2020.2.15
+
+part 23 done 2020.2.16
 
 ### next
 
-[榜单详情组件一站式开发【组件复用，解放自我】-传送门](https://juejin.im/book/5da96626e51d4524ba0fd237/section/5da97973e51d4524cb1f92c5)
+[播放器2: 布局+动画各个击破-传送门](https://juejin.im/book/5da96626e51d4524ba0fd237/section/5da97a73e51d4524a34aee27)
 
 ### 尽管 hooks 能模拟 redux 的核心功能，但是能够取代 redux 这件事我不敢苟同
 
