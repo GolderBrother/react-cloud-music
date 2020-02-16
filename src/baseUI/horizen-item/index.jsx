@@ -42,7 +42,6 @@ function Horizen(props) {
       </div>
     </Scroll>
   );
-  return "Horizen";
 }
 
 Horizen.propTypes = {

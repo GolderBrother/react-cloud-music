@@ -1,4 +1,4 @@
-import * as actionTypes from './actionTypes';
+import * as actionsType from './actionTypes';
 import {
     fromJS
 } from 'immutable';
@@ -10,10 +10,10 @@ const defaultState = fromJS({
     currentAlbum: {}
 });
 export default handleActions({
-    [actionTypes.CHANGE_ENTER_LOADING]: (state, action) => {
+    [actionsType.CHANGE_ENTER_LOADING]: (state, action) => {
         return state.set('enterLoading', action.payload);
     },
-    [actionTypes.CHANGE_CURRENT_ALBUN]: (state, action) => {
+    [actionsType.CHANGE_CURRENT_ALBUN]: (state, action) => {
         return state.set('currentAlbum', action.payload);
     }
 }, defaultState);

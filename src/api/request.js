@@ -25,7 +25,13 @@ export const getSingerCategoryRequest = (cate, alpha = '', offset) => axiosInsta
 export const getRankListRequest = () => axiosInstance.get(`/toplist/detail`);
 
 /**
- * 获取歌单详情 歌单 id
- * @param {number} id 
+ * 获取歌单详情 
+ * @param {number} id 歌单 id
  */
-export const getAlbumDetailRequest = (id) => axiosInstance.get(`/playlist/detail?id=${id}`)
+export const getAlbumDetailRequest = (id) => axiosInstance.get(`/playlist/detail?id=${id}`);
+
+/**
+ * 调用此接口 , 传入歌手 id, 可获得歌手部分信息和热门歌曲: 调用此接口 , 传入歌手 id, 可获得歌手部分信息和热门歌曲
+ * @param {number} id 歌手 id
+ */
+export const getSingerInfoRequest = (id) => axiosInstance.get(`/artists?id=${id}`);

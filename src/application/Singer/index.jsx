@@ -2,8 +2,18 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import Header from "../../baseUI/header";
 import Scroll from "../../baseUI/scroll";
 import SongList from "../SongList";
-import { Container, ImgWrapper, CollectButton, BgLayer, SongListWrapper } from "./style";
+import {
+  Container,
+  ImgWrapper,
+  CollectButton,
+  BgLayer,
+  SongListWrapper
+} from "./style";
 import { CSSTransition } from "react-transition-group";
+import { HEADER_HEIGHT } from "../../api/config";
+import { connect } from 'react-redux';
+import { getSingerInfo, changeEnterLoading } from './store/actions';
+import Loading from '../../baseUI/loading/index';
 function Singer(props) {
   const [showStatus, setShowStatus] = useState(true);
   // 用来记录图片初始高度
@@ -19,64 +29,67 @@ function Singer(props) {
   const songListWrapperRef = useRef();
   const scrollRef = useRef();
 
+  const { getSingerInfoDispatch } = props;
+
+  const { artist: immutableArtist, songsOfArtist: immutableSongsOfArtist, enterLoading } = props;
+  console.log('enterLoading', enterLoading);
+  const artist = (immutableArtist && immutableArtist.toJS()) || {};
+  const songs = (immutableSongsOfArtist && immutableSongsOfArtist.toJS()) || [];
   const setShowStatusFalse = useCallback(() => {
     setShowStatus(false);
   }, []);
-  // mock data
-  const artist = {
-    picUrl:
-      "https://p2.music.126.net/W__FCWFiyq0JdPtuLJoZVQ==/109951163765026271.jpg",
-    name: "薛之谦",
-    hotSongs: [
-      {
-        name: "我好像在哪见过你1",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你2",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你3",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你4",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你5",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你6",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      }
-    ]
-  };
+  // handleScroll 作为一个传给子组件的方法，因此我们需要用 useCallback 进行包裹，防止不必要的重渲染
+  const handleScroll = useCallback(pos => {
+    const newY = pos.y;
+    const height = initialHeight.current;
+    const headerDOM = headerRef.current;
+    const imageDOM = imgWrapperRef.current;
+    const collectButtonDOM = collectButtonRef.current;
+    const bgLayerDOM = bgLayerRef.current;
+    const minScrollY = -(height - OFFSET) + HEADER_HEIGHT;
+
+    // 这个是滑动距离占图片高度的百分比
+    const percent = Math.abs(newY / height);
+
+    // (1)处理往下拉动的情况，要达到的效果：图片放大、按钮和遮罩跟着偏移
+    if (newY > 0) {
+      imageDOM.style["transform"] = `scale(${1 + percent})`;
+      collectButtonDOM.style["transform"] = `translate3d(0px, ${newY}px, 0px)`;
+      bgLayerDOM.style.top = `${height - OFFSET + newY}px`;
+    } else if (newY >= minScrollY) {
+      // 往上滑动，但是遮罩还没超过 Header 部分
+      bgLayerDOM.style.top = `${height - OFFSET - Math.abs(newY)}px`;
+      bgLayerDOM.style.zIndex = 1;
+      // 这时候保证遮罩的层叠优先级比图片高，不至于被图片挡住
+      imageDOM.style.zIndex = -1;
+      imageDOM.style.height = 0;
+      imageDOM.style.paddingTop = "75%";
+      // 按钮要跟着偏移并逐渐变透明
+      collectButtonDOM.style.opacity = `${1 - percent * 2}`;
+      collectButtonDOM.style["transform"] = `translate3d(0px, ${newY}px, 0px)`;
+    } else if (newY < minScrollY) {
+      // 往上滑动，但是超过 Header 部分
+      bgLayerDOM.style.top = `${HEADER_HEIGHT - OFFSET}px`;
+      bgLayerDOM.style.zIndex = 1;
+      // 防止溢出的歌单内容遮住 Header
+      headerDOM.style.zIndex = 100;
+      // 此时图片高度和header要一致，否则无法往下顶住歌单列表
+      imageDOM.style.height = `${HEADER_HEIGHT}px`;
+      imageDOM.style.paddingTop = 0;
+      imageDOM.style.zIndex = 99;
+    }
+  }, []);
   useEffect(() => {
-    const imgOffsetHeight = imgWrapperRef && imgWrapperRef.current && imgWrapperRef.current.offsetHeight;
+    const id = props.match.params.id;
+    getSingerInfoDispatch(id);
+    const imgOffsetHeight =
+      imgWrapperRef &&
+      imgWrapperRef.current &&
+      imgWrapperRef.current.offsetHeight;
     initialHeight.current = imgOffsetHeight;
     // 歌曲列表和遮罩的高度一致。把遮罩先放在下面，以裹住歌曲列表
-    bgLayerRef.current.style.top = songListWrapperRef.current.style.top = `${imgOffsetHeight - OFFSET}px`;
+    bgLayerRef.current.style.top = songListWrapperRef.current.style.top = `${imgOffsetHeight -
+      OFFSET}px`;
     //eslint-disable-next-line
     scrollRef.current.refresh();
   }, []);
@@ -90,9 +103,13 @@ function Singer(props) {
       onExited={() => props.history.goBack()}
     >
       <Container>
-        <Header title={artist.name} ref={headerRef} handleClick={setShowStatusFalse}></Header>
+        <Header
+          title={artist.name}
+          ref={headerRef}
+          handleClick={setShowStatusFalse}
+        ></Header>
         <ImgWrapper bgUrl={artist.picUrl} ref={imgWrapperRef}>
-            <div className="filter"></div>
+          <div className="filter"></div>
         </ImgWrapper>
         <CollectButton ref={collectButtonRef}>
           <i className="iconfont">&#xe62d;</i>
@@ -100,16 +117,26 @@ function Singer(props) {
         </CollectButton>
         <BgLayer ref={bgLayerRef}></BgLayer>
         <SongListWrapper ref={songListWrapperRef}>
-            {/* 歌手列表，需要引用歌单详情(Album)的歌曲列表组件 */}
-            <Scroll ref={scrollRef}>
-              <SongList
-                songs={artist.hotSongs}
-                showCollect={false}
-              ></SongList>
-            </Scroll>
+          {/* 歌手列表，需要引用歌单详情(Album)的歌曲列表组件 */}
+          <Scroll ref={scrollRef} onScroll={handleScroll}>
+            <SongList songs={songs} showCollect={false}></SongList>
+          </Scroll>
         </SongListWrapper>
+        {Boolean(enterLoading) ? <Loading></Loading> : null}
       </Container>
     </CSSTransition>
   );
 }
-export default React.memo(Singer);
+
+const mapStateToProps = state => ({
+  artist: state.getIn(['singer', 'artist']),
+  songsOfArtist: state.getIn(['singer', 'songsOfArtist']),
+  enterLoading: state.getIn(['singer', 'enterLoading'])
+});
+const mapDispatchToProps = dispatch => ({
+  getSingerInfoDispatch: (id) => {
+    dispatch(changeEnterLoading(true));
+    dispatch(getSingerInfo(id));
+  }
+});
+export default connect(mapStateToProps, mapDispatchToProps)(React.memo(Singer));

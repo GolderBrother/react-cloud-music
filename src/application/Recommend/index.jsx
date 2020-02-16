@@ -17,7 +17,7 @@ function Recommend(props) {
     // 没有有数据才获取，有数据就不重新获取，减少请求损耗
     if (!bannerList.size) getBannerListDispatch();
     if (!recommendList.size) getRecommendListDispatch();
-  }, []);
+  }, [bannerList, recommendList]);
 
   const bannerListJS = bannerList ? bannerList.toJS() : [];
   const recommendListJS = recommendList ? recommendList.toJS() : [];

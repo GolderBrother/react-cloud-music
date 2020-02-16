@@ -3,6 +3,7 @@ import { renderRoutes } from "react-router-config";
 // 利用 NavLink 组件进行路由跳转 最终会渲染成a标签
 import { NavLink } from "react-router-dom";
 import { Top, Tab, TabItem } from "./style.js";
+import Player from '../Player';
 function Home(props) {
   const { route } = props;
   return (
@@ -29,6 +30,7 @@ function Home(props) {
           </TabItem>
         </NavLink>
       </Tab>
+      <Player />
       {renderRoutes(route.routes)}
     </section>
   );

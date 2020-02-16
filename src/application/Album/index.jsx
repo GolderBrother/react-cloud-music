@@ -6,7 +6,7 @@ import Scroll from "../../baseUI/scroll";
 import SongList from "../SongList";
 import GlobalStyle from "../../assets/global-style";
 import { HEADER_HEIGHT } from "../../api/config";
-import { getName, getCount } from "../../api/utils";
+import { getCount } from "../../api/utils";
 import { getAlbumDetail } from "./store/actions";
 import { connect } from "react-redux";
 import Loading from "../../baseUI/loading";
@@ -123,26 +123,9 @@ function Album(props) {
           <span>收藏({getCount(currentAlbum.subscribedCount)})</span>
         </div>
       </div>
-      {currentAlbum.tracks ? (<SongList
-        songs={currentAlbum.tracks}
-        showCollect={true}
-      ></SongList>) : null}
-      
-      {/* <SongList>
-        
-        {currentAlbum.tracks &&
-          currentAlbum.tracks.map((item, index) => (
-            <li key={`${item.al.name}_${index}`}>
-              <span className="index">{index + 1}</span>
-              <div className="info">
-                <span>{item.name}</span>
-                <span>
-                  {getName(item.ar)} - {item.al.name}
-                </span>
-              </div>
-            </li>
-          ))}
-      </SongList> */}
+      {currentAlbum.tracks ? (
+        <SongList songs={currentAlbum.tracks} showCollect={true}></SongList>
+      ) : null}
     </SongWrapper>
   );
   return (
