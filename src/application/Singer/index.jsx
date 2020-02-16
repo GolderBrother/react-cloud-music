@@ -2,16 +2,23 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import Header from "../../baseUI/header";
 import Scroll from "../../baseUI/scroll";
 import SongList from "../SongList";
-import { Container } from "./style";
+import { Container, ImgWrapper, CollectButton, BgLayer, SongListWrapper } from "./style";
 import { CSSTransition } from "react-transition-group";
 function Singer(props) {
   const [showStatus, setShowStatus] = useState(true);
-  // 图片初始高度
+  // 用来记录图片初始高度
   const initialHeight = useRef(0);
   // 往上偏移的尺寸，露出圆角
   const OFFSET = 5;
-  const header = useRef();
-  
+
+  // 用来获取真实DOM
+  const headerRef = useRef();
+  const imgWrapperRef = useRef();
+  const collectButtonRef = useRef();
+  const bgLayerRef = useRef();
+  const songListWrapperRef = useRef();
+  const scrollRef = useRef();
+
   const setShowStatusFalse = useCallback(() => {
     setShowStatus(false);
   }, []);
@@ -65,6 +72,14 @@ function Singer(props) {
       }
     ]
   };
+  useEffect(() => {
+    const imgOffsetHeight = imgWrapperRef && imgWrapperRef.current && imgWrapperRef.current.offsetHeight;
+    initialHeight.current = imgOffsetHeight;
+    // 歌曲列表和遮罩的高度一致。把遮罩先放在下面，以裹住歌曲列表
+    bgLayerRef.current.style.top = songListWrapperRef.current.style.top = `${imgOffsetHeight - OFFSET}px`;
+    //eslint-disable-next-line
+    scrollRef.current.refresh();
+  }, []);
   return (
     <CSSTransition
       in={showStatus}
@@ -75,18 +90,18 @@ function Singer(props) {
       onExited={() => props.history.goBack()}
     >
       <Container>
-        <Header title={artist.name} ref={header} handleClick={setShowStatusFalse}></Header>
-        <ImgWrapper bgUrl={artist.bgUrl}>
-            <div class="filter"></div>
+        <Header title={artist.name} ref={headerRef} handleClick={setShowStatusFalse}></Header>
+        <ImgWrapper bgUrl={artist.picUrl} ref={imgWrapperRef}>
+            <div className="filter"></div>
         </ImgWrapper>
-        <CollectButton>
+        <CollectButton ref={collectButtonRef}>
           <i className="iconfont">&#xe62d;</i>
           <span className="text"> 收藏 </span>
         </CollectButton>
-        <BgLayer></BgLayer>
-        <SongListWrapper>
+        <BgLayer ref={bgLayerRef}></BgLayer>
+        <SongListWrapper ref={songListWrapperRef}>
             {/* 歌手列表，需要引用歌单详情(Album)的歌曲列表组件 */}
-            <Scroll>
+            <Scroll ref={scrollRef}>
               <SongList
                 songs={artist.hotSongs}
                 showCollect={false}

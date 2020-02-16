@@ -83,7 +83,7 @@ export const BgLayer = styled.div`
     border-radius: 10px;
 `;
 
-export const SongListWrapper = style.div`
+export const SongListWrapper = styled.div`
     position: absolute;
     z-index: 50;
     top: 0px;

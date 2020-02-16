@@ -1,4 +1,5 @@
-import { SongListWrapper } from "./style";
+import React from 'react';
+import { SongWrapper, SongListWrapper } from "./style";
 import { getName, getCount } from "../../api/utils";
 const SongList = React.forwardRef((props, ref) => {
   const { songs = [], showCollect, collectCount, showBackground } = props;
@@ -6,7 +7,7 @@ const SongList = React.forwardRef((props, ref) => {
   const selectItem = item => {
     console.log("selectItem item", item);
   };
-  const showSongList = (list = []) =>
+  const renderSongList = (list = []) =>
     list.map((item, index) => (
       <li key={`${item.al.name}_${index}`} onClick={() => selectItem(item)}>
         <span className="index">{index + 1}</span>
@@ -19,7 +20,7 @@ const SongList = React.forwardRef((props, ref) => {
         </div>
       </li>
     ));
-  const showCollect = count => (
+  const renderCollect = count => (
     <div className="add_list">
       <i className="iconfont">&#xe62d;</i>
       {/* <span>收藏({getCount(currentAlbum.subscribedCount)})</span> */}
@@ -36,9 +37,9 @@ const SongList = React.forwardRef((props, ref) => {
             <span className="sum">(共{totalCount}首)</span>
           </span>
         </div>
-        {showCollect ? showCollect(collectCount) : null}
+        {showCollect ? renderCollect(collectCount) : null}
       </div>
-      <SongListWrapper>{songs ? showSongList(songs) : null}</SongListWrapper>
+      <SongListWrapper>{songs ? renderSongList(songs) : null}</SongListWrapper>
     </SongWrapper>
   );
 });

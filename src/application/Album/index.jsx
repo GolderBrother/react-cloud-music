@@ -1,8 +1,9 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { Container, TopDesc, Menu, SongWrapper, SongList } from "./style";
+import { Container, TopDesc, Menu, SongWrapper } from "./style";
 import { CSSTransition } from "react-transition-group";
 import Header from "../../baseUI/header";
 import Scroll from "../../baseUI/scroll";
+import SongList from "../SongList";
 import GlobalStyle from "../../assets/global-style";
 import { HEADER_HEIGHT } from "../../api/config";
 import { getName, getCount } from "../../api/utils";
@@ -122,7 +123,13 @@ function Album(props) {
           <span>收藏({getCount(currentAlbum.subscribedCount)})</span>
         </div>
       </div>
-      <SongList>
+      {currentAlbum.tracks ? (<SongList
+        songs={currentAlbum.tracks}
+        showCollect={true}
+      ></SongList>) : null}
+      
+      {/* <SongList>
+        
         {currentAlbum.tracks &&
           currentAlbum.tracks.map((item, index) => (
             <li key={`${item.al.name}_${index}`}>
@@ -135,7 +142,7 @@ function Album(props) {
               </div>
             </li>
           ))}
-      </SongList>
+      </SongList> */}
     </SongWrapper>
   );
   return (
