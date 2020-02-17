@@ -10,7 +10,7 @@ import {
   ProgressWrapper,
   Operators
 } from "./style";
-import { getName } from "../../../api/utils";
+import { getName, getPrefixStyle } from "../../../api/utils";
 function NormalPlayer(props) {
   console.log("NormalPlayer props", props);
   const { song = {}, fullScreen } = props;
@@ -18,7 +18,7 @@ function NormalPlayer(props) {
   const normalPlayerRef = useRef();
   const cdWrapperRef = useRef();
   const handleBack = () => toggleFullScreen(false);
-  const ANIMATION_NAME = 'move';
+  const ANIMATION_NAME = "move";
   // 进入时的回调，启动帧动画
   const onEnter = () => {
     normalPlayerRef.current.style.display = "block";
@@ -35,20 +35,20 @@ function NormalPlayer(props) {
       }
     };
     animations.registerAnimation({
-        name: ANIMATION_NAME,
-        animation,
-        presets: {
-            duration:400,
-            easing: 'linear'
-        }
+      name: ANIMATION_NAME,
+      animation,
+      presets: {
+        duration: 400,
+        easing: "linear"
+      }
     });
     animations.runAnimation(cdWrapperRef.current, ANIMATION_NAME);
   };
   // 进入后的回调，解绑帧动画
   const afterEnter = () => {
     animations.unregisterAnimation(ANIMATION_NAME);
-    normalPlayerRef.current.style.animation = '';
-  }
+    normalPlayerRef.current.style.animation = "";
+  };
   // 计算偏移的辅助函数
   const _getPosAndScale = () => {
     const targetWidth = 40;
@@ -66,6 +66,29 @@ function NormalPlayer(props) {
       scale
     };
   };
+  const transformPrefix = getPrefixStyle("transform");
+  // 离开时的回调
+  const onLeave = () => {
+    if (!cdWrapperRef.current) return;
+    const cdWrapperDom = cdWrapperRef.current;
+    cdWrapperDom.style.transition = "all 0.4s";
+    const { x, y, scale } = _getPosAndScale();
+    cdWrapperDom.style[
+      transformPrefix
+    ] = `translate3d(${x}px, ${y}px, 0px) scale(${scale})`;
+  };
+
+  // 离开后的回调，清空所有过渡、动画和隐藏元素
+  const afterLeave = () => {
+    if (!cdWrapperRef.current) return;
+    // 清空过渡和动画
+    const cdWrapperDom = cdWrapperRef.current;
+    cdWrapperDom.style.transition = "";
+    cdWrapperDom.style[transformPrefix] = "";
+    // 一定要注意现在要把 normalPlayer 这个 DOM 给隐藏掉，因为 CSSTransition 的工作只是把动画执行一遍
+    // 不置为 none 现在全屏播放器页面还是存在
+    normalPlayerRef.current.style.display = "none";
+  };
   return (
     <CSSTransition
       classNames={"normal"}
@@ -74,8 +97,8 @@ function NormalPlayer(props) {
       mountOnEnter
       onEnter={onEnter}
       onEntered={afterEnter}
-      // onExit={onExit}
-      // onExited={afterExit}
+      onExit={onLeave}
+      onExited={afterLeave}
     >
       <NormalPlayerContainer ref={normalPlayerRef}>
         <div class="background">
@@ -88,12 +111,12 @@ function NormalPlayer(props) {
         </div>
         <div className="background layer"></div>
         <Top className="top">
-          <div class="back" onClick={handleBack}>
-            <i class="iconfont icon-back"></i>
+          <div className="back" onClick={handleBack}>
+            <i className="iconfont icon-back"></i>
           </div>
-          <div class="text">
-            <h1 class="title">{song.name}</h1>
-            <h2 class="subtitle">{getName(song.ar)}</h2>
+          <div className="text">
+            <h1 className="title">{song.name}</h1>
+            <h2 className="subtitle">{getName(song.ar)}</h2>
           </div>
         </Top>
         <Middle ref={cdWrapperRef}>

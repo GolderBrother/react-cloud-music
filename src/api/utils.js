@@ -61,3 +61,32 @@ export const getName = (list) => {
  * @param {*} obj 对象
  */
 export const isPlainObject = obj => !obj || Object.keys(obj).length === 0;
+
+/**
+ * 获取样式的浏览器厂商前缀
+ * @param {*} style 
+ */
+export function getPrefixStyle(style){
+    const elementStyle = document.createElement('div').style;
+    const vendor = (() => {
+         // 首先通过 transition 属性判断是何种浏览器
+      let transformNames = {
+        webkit: "webkitTransform",
+        Moz: "MozTransform",
+        O: "OTransfrom",
+        ms: "msTransform",
+        standard: "Transform"
+      };
+      for (const key in transformNames) {
+          if (transformNames.hasOwnProperty(key)) {
+              const transformPrefix = transformNames[key];
+              if(elementStyle[transformPrefix] !== undefined) return key;
+              
+          }
+      }
+      return false;
+    })();
+    if(vendor === false) return false;
+    if(vendor === "standard") return style;
+    return vendor + style.charAt(0).toUpperCase() + style.slice(1);
+}
