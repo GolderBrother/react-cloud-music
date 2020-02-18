@@ -10,7 +10,7 @@ const rotate = keyframes `
         transform: rotate(360deg);
     }
 `;
-export const NormalPlayerContainer = styled.div `
+export const NormalPlayerContainer = styled.div`
     position: fixed;
     left: 0px;
     right: 0px;
@@ -20,23 +20,25 @@ export const NormalPlayerContainer = styled.div `
     background: ${GlobalStyle["background-color"]};
     &.normal-enter, &.normal-exit-done {
         .top {
-            transform: translate3d (0, -100px, 0);
+            transform: translate3d(0, -100px, 0);
         }
         .bottom {
-            transform: translate3d (0, 100px, 0);
+            transform: translate3d(0, 100px, 0);
         }
     }
-    &.normal-enter-active, &.normal-exit-active {
-        .top, .bottom {
-            transform: translate3d (0, 0, 0);
-            transition: all .4s cubic-bezier (0.86, 0.18, 0.82, 1.32);
+    &.normal-enter-active,
+    &.normal-exit-active {
+        .top,
+        .bottom {
+            transform: translate3d(0, 0, 0);
+            transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
         }
         opacity: 1;
-        transition: all .4s;
+        transition: all 0.4s;
     }
     &.normal-exit-active {
-        opacity: 1;
-    }
+        opacity: 0;
+      }
     .background {
         position: absolute;
         left: 0px;
@@ -63,12 +65,12 @@ export const Top = styled.div `
         left: 6px;
         z-index: 50;
         .iconfont {
-        display: block;
-        padding: 9px;
-        font-size: 24px;
-        color: ${GlobalStyle["font-color-desc"]};
-        font-weight: bold;
-        transform: rotate (90deg);
+            display: block;
+            padding: 9px;
+            font-size: 24px;
+            color: ${GlobalStyle["font-color-desc"]};
+            font-weight: bold;
+            transform: rotate(90deg);
         }
     }
     .title {
@@ -181,7 +183,6 @@ export const ProgressWrapper = styled.div `
 
 export const Operators = styled.div `
     display: flex;
-    -webkit-box-align: center;
     align-items: center;
     .icon {
         font-weight: 300;
@@ -197,8 +198,8 @@ export const Operators = styled.div `
             text-align: left;
         }
         &.i-center {
-            text-align: center;
             padding: 0px 20px;
+            text-align: center;
             i {
                 font-size: 40px;
             }

@@ -25,13 +25,13 @@ function NormalPlayer(props) {
     const { x, y, scale } = _getPosAndScale(); // 获取 miniPlayer 图片中心相对 normalPlayer 唱片中心的偏移距离(x, y)
     const animation = {
       0: {
-        transform: `translate3d (${x} px,${y} px,0) scale (${scale})`
+        transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
       },
       60: {
-        transform: `translate3d (0, 0, 0) scale (1.1)`
+        transform: `translate3d(0, 0, 0) scale(1.1)`
       },
       100: {
-        transform: `translate3d (0, 0, 0) scale (1)`
+        transform: `translate3d(0, 0, 0) scale(1)`
       }
     };
     animations.registerAnimation({
@@ -112,7 +112,7 @@ function NormalPlayer(props) {
         <div className="background layer"></div>
         <Top className="top">
           <div className="back" onClick={handleBack}>
-            <i className="iconfont icon-back"></i>
+            <i className="iconfont icon-back">&#xe662;</i>
           </div>
           <div className="text">
             <h1 className="title">{song.name}</h1>
