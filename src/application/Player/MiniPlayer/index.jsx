@@ -1,24 +1,28 @@
-import React, {useRef} from "react";
+import React, { useRef } from "react";
 import { MiniPlayerContainer } from "./style";
 import { getName } from "../../../api/utils";
-import { CSSTransition } from 'react-transition-group';
+import { CSSTransition } from "react-transition-group";
+import ProgressCircle from "../../../baseUI/progressCircle";
 function MiniPlayer(props) {
-  const { song = {}, fullScreen } = props; 
+  const { song = {}, fullScreen } = props;
   const { toggleFullScreen } = props;
   const miniPlayerRef = useRef();
   const onEnter = () => {
-    if(miniPlayerRef) {
-      miniPlayerRef.current.style.display = 'flex';
+    if (miniPlayerRef) {
+      miniPlayerRef.current.style.display = "flex";
     }
-  }
+  };
   const onExited = () => {
-    if(miniPlayerRef) {
-      miniPlayerRef.current.style.display = 'none';
+    if (miniPlayerRef) {
+      miniPlayerRef.current.style.display = "none";
     }
-  }
+  };
   const showFullScreen = () => {
     toggleFullScreen(true);
-  }
+  };
+  
+  // mock percent
+  const percent = 0.2;
   return (
     <CSSTransition
       in={!fullScreen}
@@ -29,9 +33,9 @@ function MiniPlayer(props) {
     >
       <MiniPlayerContainer ref={miniPlayerRef} onClick={showFullScreen}>
         <div className="icon">
-          <div class="imgWrapper">
+          <div className="imgWrapper">
             <img
-              class="play"
+              className="play"
               src={(song.al && song.al.picUrl) || ""}
               width="40"
               height="40"
@@ -39,14 +43,16 @@ function MiniPlayer(props) {
             />
           </div>
         </div>
-        <div class="text">
-          <h2 class="name">{song.name}</h2>
-          <p class="desc">{getName(song.ar)}</p>
+        <div className="text">
+          <h2 className="name">{song.name}</h2>
+          <p className="desc">{getName(song.ar)}</p>
         </div>
-        <div class="control">
-          <i className="iconfont">&#xe650;</i>
+        <div className="control">
+          <ProgressCircle radius={32} percent={percent}>
+            <i className="iconfont icon-mini">&#xe650;</i>
+          </ProgressCircle>
         </div>
-        <div class="control">
+        <div className="control">
           <i className="iconfont">&#xe640;</i>
         </div>
       </MiniPlayerContainer>

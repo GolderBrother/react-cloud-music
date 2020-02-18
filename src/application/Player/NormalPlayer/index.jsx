@@ -11,6 +11,7 @@ import {
   Operators
 } from "./style";
 import { getName, getPrefixStyle } from "../../../api/utils";
+import ProgressBar from '../../../baseUI/progressBar';
 function NormalPlayer(props) {
   console.log("NormalPlayer props", props);
   const { song = {}, fullScreen } = props;
@@ -101,7 +102,7 @@ function NormalPlayer(props) {
       onExited={afterLeave}
     >
       <NormalPlayerContainer ref={normalPlayerRef}>
-        <div class="background">
+        <div className="background">
           <img
             src={`${song.al.picUrl}?param=300x300`}
             width="100%"
@@ -132,9 +133,11 @@ function NormalPlayer(props) {
         </Middle>
         <Bottom className="bottom">
           <ProgressWrapper>
-            <span className="time time-l"></span>
-            <div className="progress-bar-wrapper"></div>
-            <span className="time time-r"></span>
+            <span className="time time-l">0:00</span>
+            <div className="progress-bar-wrapper">
+              <ProgressBar percent={0.2}></ProgressBar>
+            </div>
+            <span className="time time-r">4:37</span>
           </ProgressWrapper>
           <Operators>
             <div className="icon i-left">
