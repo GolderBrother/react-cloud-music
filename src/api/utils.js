@@ -47,7 +47,7 @@ export function findRankNO(name) {
 }
 
 // 处理歌手列表拼接歌手名字
-export const getName = (list) => {
+export const getName = (list = []) => {
     let str = "";
     list.forEach((item, index) => {
         str += index === 0 ? item.name : "/" + item.name;
@@ -89,4 +89,45 @@ export function getPrefixStyle(style){
     if(vendor === false) return false;
     if(vendor === "standard") return style;
     return vendor + style.charAt(0).toUpperCase() + style.slice(1);
+}
+
+/**
+ * 拼接出歌曲的url链接
+ * @param {*} id 歌曲ID
+ */
+export const getSongUrl = id => `https://music.163.com/song/media/outer/url?id=${id}.mp3`;
+
+// 转换歌曲的播放时间
+export const formatPlayTime = (time) => {
+    time = time | 0; // |0表示向下取整
+    const minute = (time / 60) | 0; // 分钟
+    const second = (time % 60).toString().padStart(2, '0'); // 长度不够2位的前面补0
+    return `${minute}:${second}`;
+}
+
+/**
+ * 获取指定范围内的随机数
+ * @param {*} min 最小值
+ * @param {*} max 最大值
+ */
+function getRandomInt(min, max){
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+// 随机算法
+export const shuffle = (arr) => {
+    const newArr = [];
+    arr.forEach(item => newArr.push(item));
+    for (const i in newArr) {
+        const j = getRandomInt(0, i);
+        const k = newArr[i];
+        newArr[i] = j;
+        newArr[j] = k;
+    }
+    return newArr;
+}
+
+// 获取歌曲的索引
+export const findSongIndex = (song = {}, list = []) => {
+    return list.findIndex(item => item.id === song.id);
 }

@@ -3,7 +3,7 @@ import { ProgressBarWrapper } from "./style";
 import { getPrefixStyle } from "../../api/utils";
 function ProgressBar(props) {
   const { percent } = props;
-  // 进度条改变后的回调，父组件传入的，组组件需要执行并且传入当前进度值
+  // 进度条改变后的回调，父组件传入的，子组件需要执行并且传入当前进度值
   const { percentChange } = props;
   const progressBarRef = useRef();
   const progressRef = useRef();
@@ -17,6 +17,7 @@ function ProgressBar(props) {
     progressRef.current.style.width = `${offset}px`;
     progressBtnRef.current.style[transformPrefix] = `translate3d(${offset}px, 0px, 0px)`;
   }
+  // 监听percent改变后更新进度值
   useEffect(() => {
     if(percent >= 0 && percent <= 1 && !touch.isTouching) {
       const barWidth = progressRef.current.clientWidth - progressBtnWidth;

@@ -10,12 +10,20 @@ import {
   ProgressWrapper,
   Operators
 } from "./style";
-import { getName, getPrefixStyle } from "../../../api/utils";
-import ProgressBar from '../../../baseUI/progressBar';
+import { getName, getPrefixStyle, formatPlayTime } from "../../../api/utils";
+import ProgressBar from "../../../baseUI/progressBar";
+import { playMode } from '../../../api/config';
 function NormalPlayer(props) {
   console.log("NormalPlayer props", props);
-  const { song = {}, fullScreen } = props;
-  const { toggleFullScreen } = props;
+  const {
+    song = {},
+    fullScreen,
+    playing,
+    percent,
+    duration = 0,
+    currentTime = 0
+  } = props;
+  const { toggleFullScreen, clickPlaying, onProgressChange, handlePrev, handleNext, changeMode } = props;
   const normalPlayerRef = useRef();
   const cdWrapperRef = useRef();
   const handleBack = () => toggleFullScreen(false);
@@ -90,6 +98,22 @@ function NormalPlayer(props) {
     // 不置为 none 现在全屏播放器页面还是存在
     normalPlayerRef.current.style.display = "none";
   };
+  // 获取播放模式
+  const getPlayMode = ()=> {
+    let content = '';
+    switch(mode){
+      case playMode.sequence: // 顺序
+        content = "&#xe625;";
+        break;
+      case playMode.loop: // 循环
+        content = "&#xe653;";
+        break;
+      default: // 随机
+        content = "&#xe61b;";
+        break;
+    }
+    return content;
+  }
   return (
     <CSSTransition
       classNames={"normal"}
@@ -124,7 +148,7 @@ function NormalPlayer(props) {
           <CDWrapper>
             <div className="cd">
               <img
-                className="image play"
+                className={`image play ${playing ? "" : "pause"}`}
                 src={`${song.al.picUrl}?param=400x400`}
                 alt=""
               />
@@ -133,23 +157,36 @@ function NormalPlayer(props) {
         </Middle>
         <Bottom className="bottom">
           <ProgressWrapper>
-            <span className="time time-l">0:00</span>
+            <span className="time time-l">{formatPlayTime(currentTime)}</span>
             <div className="progress-bar-wrapper">
-              <ProgressBar percent={0.2}></ProgressBar>
+              <ProgressBar
+                percent={percent}
+                // 这是进度条被滑动或点击时用来改变percent的回调函数，在父组件中传入
+                onProgressChange={onProgressChange}
+              ></ProgressBar>
             </div>
-            <span className="time time-r">4:37</span>
+            <span className="time time-r">{formatPlayTime(duration)}</span>
           </ProgressWrapper>
           <Operators>
-            <div className="icon i-left">
-              <i className="iconfont">&#xe625;</i>
+            <div className="icon i-left" onClick={changeMode}>
+              <i className="iconfont"
+                dangerouslySetInnerHTML={{__html: getPlayMode()}}
+              >&#xe625;</i>
             </div>
-            <div className="icon i-left">
+            <div className="icon i-left" onClick={handlePrev}>
               <i className="iconfont">&#xe6e1;</i>
             </div>
             <div className="icon i-center">
-              <i className="iconfont">&#xe723;</i>
+              <i
+                className="iconfont"
+                onClick={e => clickPlaying(e, !playing)}
+                // 如果直接在标签中渲染，就只会渲染出字符串，不能编译成icon
+                dangerouslySetInnerHTML={{
+                  __html: playing ? "&#xe723;" : "&#xe731;"
+                }}
+              ></i>
             </div>
-            <div className="icon i-right">
+            <div className="icon i-right" onClick={handleNext}>
               <i className="iconfont">&#xe718;</i>
             </div>
             <div className="icon i-right">
