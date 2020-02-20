@@ -11,7 +11,7 @@ import * as recommendActions from "./store/actions";
 import { renderRoutes } from 'react-router-config';
 // 推荐组件
 function Recommend(props) {
-  const { bannerList, recommendList, enterLoading } = props;
+  const { bannerList, recommendList, enterLoading, songsCount } = props;
   const { getBannerListDispatch, getRecommendListDispatch } = props;
   useEffect(() => {
     // 没有有数据才获取，有数据就不重新获取，减少请求损耗
@@ -22,7 +22,7 @@ function Recommend(props) {
   const bannerListJS = bannerList ? bannerList.toJS() : [];
   const recommendListJS = recommendList ? recommendList.toJS() : [];
   return (
-    <Content>
+    <Content play={songsCount}>
       {/* 滑动的时候，如何让下面相应的图片显示 */}
       {/* 这样随着页面滑动，下面的图片会依次显示，没有任何问题 */}
       <Scroll className="list" onScroll={forceCheck}>
@@ -45,7 +45,8 @@ const mapStateToProps = state => ({
   // 不然每次 diff 比对 props 的时候都是不一样的引用，还是导致不必要的重渲染，属于滥用 immutable
   bannerList: state.getIn(["recommend", "bannerList"]),
   recommendList: state.getIn(["recommend", "recommendList"]),
-  enterLoading: state.getIn(["recommend", "enterLoading"])
+  enterLoading: state.getIn(["recommend", "enterLoading"]),
+  songsCount: state.getIn(['player', 'playList']).size // 尽量减少 toJS 操作，直接取 size 属性就代表了 list 的长度
 });
 
 // 将redux的dispatch方法映射到组件的props对象上(方便用action)

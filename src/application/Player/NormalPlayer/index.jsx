@@ -12,18 +12,25 @@ import {
 } from "./style";
 import { getName, getPrefixStyle, formatPlayTime } from "../../../api/utils";
 import ProgressBar from "../../../baseUI/progressBar";
-import { playMode } from '../../../api/config';
+import { playMode } from "../../../api/config";
 function NormalPlayer(props) {
-  console.log("NormalPlayer props", props);
   const {
     song = {},
     fullScreen,
     playing,
     percent,
     duration = 0,
-    currentTime = 0
+    currentTime = 0,
+    mode = ''
   } = props;
-  const { toggleFullScreen, clickPlaying, onProgressChange, handlePrev, handleNext, changeMode } = props;
+  const {
+    toggleFullScreen,
+    clickPlaying,
+    onProgressChange,
+    handlePrev,
+    handleNext,
+    changeMode
+  } = props;
   const normalPlayerRef = useRef();
   const cdWrapperRef = useRef();
   const handleBack = () => toggleFullScreen(false);
@@ -99,21 +106,22 @@ function NormalPlayer(props) {
     normalPlayerRef.current.style.display = "none";
   };
   // 获取播放模式
-  const getPlayMode = ()=> {
-    let content = '';
-    switch(mode){
+  const getPlayMode = () => {
+    let content = "";
+    switch (mode) {
       case playMode.sequence: // 顺序
         content = "&#xe625;";
         break;
       case playMode.loop: // 循环
         content = "&#xe653;";
         break;
-      default: // 随机
+      default:
+        // 随机
         content = "&#xe61b;";
         break;
     }
     return content;
-  }
+  };
   return (
     <CSSTransition
       classNames={"normal"}
@@ -169,9 +177,12 @@ function NormalPlayer(props) {
           </ProgressWrapper>
           <Operators>
             <div className="icon i-left" onClick={changeMode}>
-              <i className="iconfont"
-                dangerouslySetInnerHTML={{__html: getPlayMode()}}
-              >&#xe625;</i>
+              <i
+                className="iconfont"
+                dangerouslySetInnerHTML={{ __html: getPlayMode() }}
+              >
+                &#xe625;
+              </i>
             </div>
             <div className="icon i-left" onClick={handlePrev}>
               <i className="iconfont">&#xe6e1;</i>

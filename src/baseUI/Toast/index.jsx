@@ -31,8 +31,4 @@ const [ timer, setTimer ] = useState();
     </CSSTransition>
   );
 });
-function Toast(props) {
-  const {} = props;
-  return;
-}
 export default React.memo(Toast);

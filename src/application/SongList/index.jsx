@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SongWrapper, SongListWrapper } from "./style";
 import { getName, getCount } from "../../api/utils";
+import { connect } from 'react-redux';
+import { changePlayList, changeCurrentIndex, changeSequencePlayList } from '../../application/Player/store/actions';
 const SongList = React.forwardRef((props, ref) => {
   const { songs = [], showCollect, collectCount, showBackground } = props;
+  const { changeCurrentIndexDispatch } = props;
   const totalCount = (songs && songs.length) || 0;
   const selectItem = item => {
     console.log("selectItem item", item);
@@ -27,6 +30,11 @@ const SongList = React.forwardRef((props, ref) => {
       <span>收藏({getCount(count)})</span>
     </div>
   );
+  useEffect(() => {
+    changeCurrentIndexDispatch(0);
+  }, []);
+
+  
   return (
     <SongWrapper ref={ref} showBackground={showBackground}>
       <div className="first_line">
@@ -43,4 +51,11 @@ const SongList = React.forwardRef((props, ref) => {
     </SongWrapper>
   );
 });
-export default React.memo(SongList);
+const mapStateToProps = null;
+const mapDispatchToProps = dispatch => ({
+  changePlayListDispatch: (data) => dispatch(changePlayList(data)),
+  changeCurrentIndexDispatch: data => dispatch(changeCurrentIndex(data)),
+  changeSequencePlayListDispatch: data => dispatch(changeSequencePlayList(data)) 
+});
+// 将 ui 组件包装成容器组件
+export default connect(mapStateToProps, mapDispatchToProps)(React.memo(SongList));

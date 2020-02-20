@@ -14,6 +14,7 @@ import { HEADER_HEIGHT } from "../../api/config";
 import { connect } from 'react-redux';
 import { getSingerInfo, changeEnterLoading } from './store/actions';
 import Loading from '../../baseUI/loading/index';
+import MusicNote from '../../baseUI/music-note';
 function Singer(props) {
   const [showStatus, setShowStatus] = useState(true);
   // 用来记录图片初始高度
@@ -28,7 +29,6 @@ function Singer(props) {
   const bgLayerRef = useRef();
   const songListWrapperRef = useRef();
   const scrollRef = useRef();
-
   const { getSingerInfoDispatch } = props;
 
   const { artist: immutableArtist, songsOfArtist: immutableSongsOfArtist, enterLoading } = props;
@@ -93,6 +93,17 @@ function Singer(props) {
     //eslint-disable-next-line
     scrollRef.current.refresh();
   }, []);
+  const musicNoteRef = useRef();
+
+  const musicAnimation = (x, y) => {
+    musicNoteRef.current.startAnimation(x, y);
+  }
+
+  /* 解释一下我为什么要用定时器？
+
+  因为目前元素的 display 虽然变为了 inline-block, 但是元素显示出来需要・浏览器的回流 过程，无法立即显示。 也就是说元素目前还是 隐藏 的，那么 元素的位置未知，导致 transform 失效
+  用 setTimout 的本质将动画逻辑放到下一次的 宏任务。事实上，当本次的宏任务完成后， 会触发 浏览器 GUI 渲染线程 的重绘工作，然后才执行下一次宏任务，那么下一次宏任务中元素就显示了，transform 便能生效 */
+
   return (
     <CSSTransition
       in={showStatus}
@@ -119,7 +130,8 @@ function Singer(props) {
         <SongListWrapper ref={songListWrapperRef}>
           {/* 歌手列表，需要引用歌单详情(Album)的歌曲列表组件 */}
           <Scroll ref={scrollRef} onScroll={handleScroll}>
-            <SongList songs={songs} showCollect={false}></SongList>
+            <SongList songs={songs} showCollect={false} musicAnimation={musicAnimation}></SongList>
+            <MusicNote ref={musicNoteRef}></MusicNote>
           </Scroll>
         </SongListWrapper>
         {Boolean(enterLoading) ? <Loading></Loading> : null}

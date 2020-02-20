@@ -11,6 +11,7 @@ import { getAlbumDetail } from "./store/actions";
 import { connect } from "react-redux";
 import Loading from "../../baseUI/loading";
 import { isPlainObject } from "../../api/utils";
+import MusicNote from "../../baseUI/music-note";
 function Album(props) {
   const [title, setTitle] = useState("歌单");
   const [showStatus, setShowStatus] = useState(true);
@@ -19,6 +20,7 @@ function Album(props) {
   const id = props.match.params.id;
   const { getAlbumDetailDispatch } = props;
   const headerRef = useRef();
+  const musicNoteRef = useRef();
   const currentAlbum =
     (currentAlbumImmutable && currentAlbumImmutable.toJS()) || {};
   // 将传给子组件的函数用 useCallback 包裹，这也是 useCallback 的常用场景
@@ -49,6 +51,9 @@ function Album(props) {
     // 当你点击后，执行路由跳转逻辑，这个时候路由变化，当前的组件会被立即卸载，相关的动画当然也就不复存在了。最后的解决方案就是，先让页面切出动画执行一次，然后在动画执行完的瞬间跳转路由，这就达到我们的预期了。
     setShowStatus(false);
   }, []);
+  const musicAnimation = (x, y) => {
+    musicNoteRef.current.startAnimation(x, y);
+  };
   useEffect(() => {
     getAlbumDetailDispatch(id);
   }, [id, getAlbumDetailDispatch]);
@@ -124,8 +129,15 @@ function Album(props) {
         </div>
       </div>
       {currentAlbum.tracks ? (
-        <SongList songs={currentAlbum.tracks} showCollect={true}></SongList>
+        <SongList
+          songs={currentAlbum.tracks}
+          showCollect={true}
+          showBackground={true}
+          musicAnimation={musicAnimation}
+          collectCount={currentAlbum.subscribedCount}
+        ></SongList>
       ) : null}
+      <MusicNote ref={musicNoteRef}></MusicNote>
     </SongWrapper>
   );
   return (

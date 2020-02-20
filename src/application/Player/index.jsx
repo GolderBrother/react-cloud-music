@@ -10,15 +10,8 @@ import {
   findSongIndex,
   shuffle
 } from "../../api/utils";
+import { playMode } from '../../api/config';
 function Player(props) {
-  /* const currentSong = {
-    al: {
-      picUrl:
-        "https://p1.music.126.net/JL_id1CFwNJpzgrXwemh4Q==/109951164172892390.jpg"
-    },
-    name: "木偶人",
-    ar: [{ name: "薛之谦" }]
-  }; */
   console.log("Player props", props);
   // 用来记录目前播放时间
   const [currentTime, setCurrentTime] = useState(0);
@@ -30,6 +23,7 @@ function Player(props) {
   const [modeText, setModeText] = useState("");
   const audioRef = useRef();
   const toastRef = useRef();
+  const songReady = useRef(true);
   const percent = isNaN(currentTime / duration) ? 0 : currentTime / duration;
   const {
     playMode: mode, // 播放模式
@@ -46,14 +40,14 @@ function Player(props) {
     changeCurrentIndexDispatch,
     changeCurrentSongDispatch,
     changePlayListDispatch,
-    togglePlayModeDispatch // 切换播放模式 分三种: 单曲循环、顺序循环和随机播放
+    togglePlayModeDispatch, // 切换播放模式 分三种: 单曲循环、顺序循环和随机播放
+    changeModeDispatch
   } = props;
   const currentSong = immutableCurrentSong ? immutableCurrentSong.toJS() : {};
   const playList = immutablePlayList ? immutablePlayList.toJS() : [];
   const sequencePlayList = immutableSequencePlayList
     ? immutableSequencePlayList.toJS()
     : [];
-  console.log("currentSong", currentSong);
   const clickPlaying = (e, state) => {
     e.stopPropagation();
     togglePlayingStateDispatch(state);
@@ -95,18 +89,25 @@ function Player(props) {
       !playList.length ||
       currentIndex === -1 ||
       !playList[currentIndex] ||
-      playList[currentIndex].id === prevSong
+      playList[currentIndex].id === prevSong ||
+      !songReady.current // 标志位为 false
     )
       return;
     changeCurrentIndexDispatch(0); // -1 -> 0
     const current = playList[currentIndex];
-    changeCurrentSongDispatch(current);
+    // changeCurrentSongDispatch(current);
     setPrevSong(current);
+    // 把标志位置为 false, 表示现在新的资源没有缓冲完成，不能切歌
+    songReady.current = false;
+    changeCurrentSongDispatch(current); // 赋值 currentSong
     audioRef &&
       audioRef.current &&
       (audioRef.current.src = getSongUrl(current.id));
     setTimeout(() => {
-      audioRef.current.play(); // 播放
+      // 注意，play 方法返回的是一个 promise 对象
+      audioRef.current.play().then(() => {
+        songReady.current = true;
+      });
     });
     togglePlayingStateDispatch(true); //  设置播放状态
     setCurrentTime(0); // 从头开始播放
@@ -138,10 +139,11 @@ function Player(props) {
   // 切换播放模式
   const changeMode = () => {
     let newMode = (mode + 1) % 3; //计算下一个模式索引
+    let index;
     switch (newMode) {
       case 0: //顺序循环
         changePlayListDispatch(sequencePlayList);
-        let index = findSongIndex(currentSong, sequencePlayList);
+        index = findSongIndex(currentSong, sequencePlayList);
         changeCurrentIndexDispatch(index);
         setModeText("顺序循环");
         break;
@@ -151,7 +153,7 @@ function Player(props) {
         break;
       case 2: //随机循环
         const newList = shuffle(sequencePlayList);
-        const index = findSongIndex(currentSong, newList);
+        index = findSongIndex(currentSong, newList);
         changePlayListDispatch(newList);
         changeCurrentIndexDispatch(index);
         setModeText("随机循环");
@@ -169,6 +171,10 @@ function Player(props) {
       handleNext(); // 切换到下一首
     }
   };
+  const handleError = () => {
+    songReady.current = true;
+    alert('播放出错');
+  }
   // 关于业务逻辑的部分都是在父组件完成然后直接传给子组件，而子组件虽然也有自己的状态，但大部分是控制UI层面的，逻辑都是从props中接受， 这也是展示了UI和逻辑分离的组件设计模式
   return (
     <div>
@@ -181,6 +187,7 @@ function Player(props) {
       />
       {isPlainObject(currentSong) ? null : (
         <NormalPlayer
+          mode={mode}
           song={currentSong}
           fullScreen={fullScreen}
           playing={playingState} //播放状态
@@ -198,11 +205,12 @@ function Player(props) {
       )}
       <audio
         ref={audioRef}
-        src={getSongUrl(currentSong[0].id)}
+        src={getSongUrl(currentSong[0] && currentSong[0].id || '')}
         // udio标签在播放的过程中会不断地触发onTimeUpdate事件，在此需要更新currentTime变量。
         onTimeUpdate={updateTime}
         // 歌曲播放完毕的回调
         onEnded={handleEnd}
+        onError={handleError}
       ></audio>
       <Toast text={modeText} ref={toastRef}></Toast>
     </div>
