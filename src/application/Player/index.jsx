@@ -93,7 +93,7 @@ function Player(props) {
       !songReady.current // 标志位为 false
     )
       return;
-    changeCurrentIndexDispatch(0); // -1 -> 0
+    // changeCurrentIndexDispatch(0); // -1 -> 0
     const current = playList[currentIndex];
     // changeCurrentSongDispatch(current);
     setPrevSong(current);
