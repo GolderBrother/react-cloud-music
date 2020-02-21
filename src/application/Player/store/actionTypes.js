@@ -6,3 +6,4 @@ export const CHANGE_PLAY_MODE = 'player/CHANGE_PLAY_MODE';
 export const CHANGE_CURRENT_INDEX = 'player/CHANGE_CURRENT_INDEX';
 export const CHANGE_SHOW_PLAYLIST = 'player/CHANGE_SHOW_PLAYLIST';
 export const CHANGE_CURRENT_SONG = 'player/CHANGE_CURRENT_SONG';
+export const DELETE_SONG = 'player/DELETE_SONG';

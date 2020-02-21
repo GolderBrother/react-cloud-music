@@ -4,7 +4,7 @@ import GlobalStyle from '../../assets/global-style';
 export const Container = styled.div `
     position: fixed;
     top: 90px;
-    bottom: 0px;
+    bottom: ${props => props.showMiniPlayer ? "60px" : 0};
     width: 100%;
     h1.offical, h1.global {
         padding-top: 15px;

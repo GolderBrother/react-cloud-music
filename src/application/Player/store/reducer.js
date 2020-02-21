@@ -8,7 +8,12 @@ import {
 import {
     playMode
 } from '../../../api/config';
-import { list } from './mock';
+import {
+    findSongIndex
+} from '../../../api/utils';
+import {
+    list
+} from './mock';
 const defaultState = fromJS({
     fullScreen: false, // 播放器是否为全屏模式
     playingState: false, // 当前歌曲是否播放
@@ -19,7 +24,30 @@ const defaultState = fromJS({
     showPlayList: false, // 是否展示播放列表
     currentSong: {} // 歌曲信息
 });
-
+// 删除歌曲逻辑略复杂，单独抽离出来
+const handleDeleteSong = (state, song) => {
+    // 下面 也可用 loadsh 库的 deepClone 方法。这里深拷贝是基于纯函数的考虑，不对参数 state 做修改
+    // 播放列表
+    const playList = JSON.parse(JSON.stringify(state.getIn(['player', 'playList'])));
+    // 顺序列表
+    const sequencePlayList = JSON.parse(JSON.stringify(state.getIn(['player', 'sequencePlayList'])));
+    let currentIndex = state.get('currentIndex');
+    // 找对应歌曲在播放列表中的索引
+    const playListIndex = findSongIndex(song, currentIndex);
+    // 在播放列表中将其删除
+    playList.splice(playListIndex, 1);
+    // 如果删除的歌曲排在当前播放歌曲前面，那么 currentIndex--，让当前的歌正常播放
+    if (playListIndex < currentIndex) currentIndex--;
+    // 找对应歌曲在顺序播放列表中的索引
+    const sequencePlayListIndex = findSongIndex(song, currentIndex);
+    // 顺序在播放列表中将其删除
+    sequencePlayList.splice(sequencePlayListIndex, 1);
+    return state.merge({
+        'playList': fromJS(playList),
+        'sequencePlayList': fromJS(sequencePlayList),
+        'currentIndex': fromJS(currentIndex)
+    });
+}
 export default handleActions({
     [actionsType.CHANGE_FULLSCREEN]: (state, action) => {
         return state.set('fullScreen', action.payload);
@@ -45,4 +73,9 @@ export default handleActions({
     [actionsType.CHANGE_CURRENT_SONG]: (state, action) => {
         return state.set('currentSong', action.payload);
     },
+    [actionsType.DELETE_SONG]: (state, {
+        payload: song
+    }) => {
+        return handleDeleteSong(state, song);
+    }
 }, defaultState);

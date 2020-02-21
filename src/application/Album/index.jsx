@@ -16,7 +16,7 @@ function Album(props) {
   const [title, setTitle] = useState("歌单");
   const [showStatus, setShowStatus] = useState(true);
   const [isMarquee, setIsMarquee] = useState(false); // 是否开启跑马灯
-  const { enterLoading, currentAlbum: currentAlbumImmutable } = props;
+  const { enterLoading, currentAlbum: currentAlbumImmutable, songsCount } = props;
   const id = props.match.params.id;
   const { getAlbumDetailDispatch } = props;
   const headerRef = useRef();
@@ -52,7 +52,7 @@ function Album(props) {
     setShowStatus(false);
   }, []);
   const musicAnimation = (x, y) => {
-    musicNoteRef.current.startAnimation(x, y);
+    musicNoteRef.current.startAnimation({x, y});
   };
   useEffect(() => {
     getAlbumDetailDispatch(id);
@@ -111,23 +111,6 @@ function Album(props) {
   // 渲染播放列表板块
   const renderSongWrapper = (currentAlbum = {}) => (
     <SongWrapper>
-      <div className="first_line">
-        <div className="play_all">
-          <i className="iconfont">&#xe6e3;</i>
-          <span>
-            播放全部
-            <span className="sum">
-              (共
-              {(currentAlbum.tracks && currentAlbum.tracks.length) || 0}
-              首)
-            </span>
-          </span>
-        </div>
-        <div className="add_list">
-          <i className="iconfont">&#xe62d;</i>
-          <span>收藏({getCount(currentAlbum.subscribedCount)})</span>
-        </div>
-      </div>
       {currentAlbum.tracks ? (
         <SongList
           songs={currentAlbum.tracks}
@@ -150,7 +133,7 @@ function Album(props) {
       // 页面离开钩子，在这边跳转路由才可以，否则在其他地方跳转，过渡动画不生效！！！
       onExited={props.history.goBack}
     >
-      <Container>
+      <Container showMiniPlayer={songsCount > 0}>
         {enterLoading ? <Loading /> : null}
         <Header
           ref={headerRef}
@@ -173,7 +156,8 @@ function Album(props) {
 }
 const mapStateToProps = state => ({
   enterLoading: state.getIn(["album", "enterLoading"]),
-  currentAlbum: state.getIn(["album", "currentAlbum"])
+  currentAlbum: state.getIn(["album", "currentAlbum"]),
+  songsCount: state.getIn(['player', 'playList']).size // 尽量减少 toJS 操作，直接取 size 属性就代表了 list 的长度
 });
 const mapDispatchToProps = dispatch => ({
   getAlbumDetailDispatch: id => dispatch(getAlbumDetail(id))

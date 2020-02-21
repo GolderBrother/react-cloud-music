@@ -39,7 +39,7 @@ function Player(props) {
     togglePlayingStateDispatch,
     changeCurrentIndexDispatch,
     changeCurrentSongDispatch,
-    changePlayListDispatch,
+    togglePlayListDispatch,
     togglePlayModeDispatch, // 切换播放模式 分三种: 单曲循环、顺序循环和随机播放
     changeModeDispatch
   } = props;
@@ -90,7 +90,7 @@ function Player(props) {
       currentIndex === -1 ||
       !playList[currentIndex] ||
       playList[currentIndex].id === prevSong ||
-      !songReady.current // 标志位为 false
+      !songReady.current // 标志位为 false, 就不能切割
     )
       return;
     // changeCurrentIndexDispatch(0); // -1 -> 0
@@ -106,7 +106,7 @@ function Player(props) {
     setTimeout(() => {
       // 注意，play 方法返回的是一个 promise 对象
       audioRef.current.play().then(() => {
-        songReady.current = true;
+        songReady.current = true; // 缓冲完了，标记为置为true，才表示可以切歌
       });
     });
     togglePlayingStateDispatch(true); //  设置播放状态
@@ -142,7 +142,7 @@ function Player(props) {
     let index;
     switch (newMode) {
       case 0: //顺序循环
-        changePlayListDispatch(sequencePlayList);
+        togglePlayListDispatch(sequencePlayList);
         index = findSongIndex(currentSong, sequencePlayList);
         changeCurrentIndexDispatch(index);
         setModeText("顺序循环");
@@ -154,7 +154,7 @@ function Player(props) {
       case 2: //随机循环
         const newList = shuffle(sequencePlayList);
         index = findSongIndex(currentSong, newList);
-        changePlayListDispatch(newList);
+        togglePlayListDispatch(newList);
         changeCurrentIndexDispatch(index);
         setModeText("随机循环");
         break;
@@ -171,9 +171,10 @@ function Player(props) {
       handleNext(); // 切换到下一首
     }
   };
-  const handleError = () => {
+  const handleError = (error) => {
     songReady.current = true;
     alert('播放出错');
+    console.log(`播放出错：${String(error)}`);
   }
   // 关于业务逻辑的部分都是在父组件完成然后直接传给子组件，而子组件虽然也有自己的状态，但大部分是控制UI层面的，逻辑都是从props中接受， 这也是展示了UI和逻辑分离的组件设计模式
   return (
@@ -183,6 +184,7 @@ function Player(props) {
         song={currentSong}
         fullScreen={fullScreen}
         toggleFullScreen={toggleFullScreenDispatch}
+        togglePlayList={togglePlayListDispatch}
         clickPlaying={clickPlaying}
       />
       {isPlainObject(currentSong) ? null : (
@@ -195,6 +197,7 @@ function Player(props) {
           duration={duration} //总时长
           percent={percent} //进度
           toggleFullScreen={toggleFullScreenDispatch}
+          togglePlayList={togglePlayListDispatch}
           clickPlaying={clickPlaying}
           onProgressChange={onProgressChange}
           handleLoop={handleLoop}
@@ -233,7 +236,7 @@ const mapDispatchToProps = dispatch => ({
   togglePlayModeDispatch: data => dispatch(actions.changePlayMode(data)),
   changeSequencePlayListDispatch: data =>
     dispatch(actions.changeSequencePlayList(data)),
-  changePlayListDispatch: data => dispatch(actions.changePlayList(data)),
+    togglePlayListDispatch: data => dispatch(actions.changePlayList(data)),
   changeCurrentIndexDispatch: data =>
     dispatch(actions.changeCurrentIndex(data)),
   changeShowPlayListDispatch: data =>

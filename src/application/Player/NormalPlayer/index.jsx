@@ -29,7 +29,8 @@ function NormalPlayer(props) {
     onProgressChange,
     handlePrev,
     handleNext,
-    changeMode
+    changeMode,
+    togglePlayList
   } = props;
   const normalPlayerRef = useRef();
   const cdWrapperRef = useRef();
@@ -122,6 +123,11 @@ function NormalPlayer(props) {
     }
     return content;
   };
+  // 显示播放列表
+  const showPlayList = (e) => {
+    e.stopPropagation();
+    togglePlayList(true);
+  }
   return (
     <CSSTransition
       classNames={"normal"}
@@ -200,7 +206,7 @@ function NormalPlayer(props) {
             <div className="icon i-right" onClick={handleNext}>
               <i className="iconfont">&#xe718;</i>
             </div>
-            <div className="icon i-right">
+            <div className="icon i-right" onClick={showPlayList}>
               <i className="iconfont">&#xe640;</i>
             </div>
           </Operators>

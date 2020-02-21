@@ -11,7 +11,7 @@ import Loading from "../../baseUI/loading";
 function Rank(props) {
   // 属性和方法分开写
   console.log("props", props);
-  const { rankList: list, loading } = props;
+  const { rankList: list, loading, songsCount } = props;
   const { getRankListDispatch } = props;
   const rankList = list ? list.toJS() : [];
   useEffect(() => {
@@ -66,7 +66,7 @@ function Rank(props) {
     ? { display: "none" }
     : { display: "" };
   return (
-    <Container>
+    <Container showMiniPlayer={songsCount > 0}>
       <Scroll>
         <div>
           <h1 className="offical" style={displayStyle}>
@@ -91,7 +91,8 @@ function Rank(props) {
 // 映射Redux全局的state到组件的props上
 const mapStateToProps = state => ({
   rankList: state.getIn(["rank", "rankList"]),
-  loading: state.getIn(["rank", "loading"])
+  loading: state.getIn(["rank", "loading"]),
+  songsCount: state.getIn(['player', 'playList']).size // 尽量减少 toJS 操作，直接取 size 属性就代表了 list 的长度
 });
 
 // 映射Redux全局的dispatch方法到组件的props上

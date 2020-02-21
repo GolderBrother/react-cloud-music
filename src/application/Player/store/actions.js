@@ -21,3 +21,5 @@ export const changeShowPlayList = data => createAction(actionTypes.CHANGE_SHOW_P
 export const changeCurrentSong = data => createAction(actionTypes.CHANGE_CURRENT_SONG)(fromJS(data));
 
 export const changeCurrentIndex = data => createAction(actionTypes.CHANGE_CURRENT_INDEX)(data);
+
+export const deleteSong = data => createAction(actionTypes.DELETE_SONG(data));

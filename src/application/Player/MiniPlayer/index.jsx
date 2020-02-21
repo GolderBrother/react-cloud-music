@@ -6,7 +6,7 @@ import ProgressCircle from "../../../baseUI/progressCircle";
 function MiniPlayer(props) {
   // playing: 播放状态 percent: 播放进度
   const { song = {}, fullScreen, playing, percent } = props;
-  const { toggleFullScreen, clickPlaying } = props;
+  const { toggleFullScreen, clickPlaying, togglePlayList } = props;
   const miniPlayerRef = useRef();
   const onEnter = () => {
     if (miniPlayerRef) {
@@ -21,6 +21,12 @@ function MiniPlayer(props) {
   const showFullScreen = () => {
     toggleFullScreen(true);
   };
+
+  // 显示播放列表
+  const showPlayList = (e) => {
+    e.stopPropagation();
+    togglePlayList(true);
+  }
 
   // mock percent
   // const percent = 0.2;
@@ -67,7 +73,7 @@ function MiniPlayer(props) {
             )}
           </ProgressCircle>
         </div>
-        <div className="control">
+        <div className="control" onClick={showPlayList}>
           <i className="iconfont">&#xe640;</i>
         </div>
       </MiniPlayerContainer>

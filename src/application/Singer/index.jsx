@@ -31,7 +31,7 @@ function Singer(props) {
   const scrollRef = useRef();
   const { getSingerInfoDispatch } = props;
 
-  const { artist: immutableArtist, songsOfArtist: immutableSongsOfArtist, enterLoading } = props;
+  const { artist: immutableArtist, songsOfArtist: immutableSongsOfArtist, enterLoading, songsCount } = props;
   console.log('enterLoading', enterLoading);
   const artist = (immutableArtist && immutableArtist.toJS()) || {};
   const songs = (immutableSongsOfArtist && immutableSongsOfArtist.toJS()) || [];
@@ -96,7 +96,7 @@ function Singer(props) {
   const musicNoteRef = useRef();
 
   const musicAnimation = (x, y) => {
-    musicNoteRef.current.startAnimation(x, y);
+    musicNoteRef.current.startAnimation({x, y});
   }
 
   /* 解释一下我为什么要用定时器？
@@ -113,7 +113,7 @@ function Singer(props) {
       unmountOnExit
       onExited={() => props.history.goBack()}
     >
-      <Container>
+      <Container showMiniPlayer={songsCount > 0}>
         <Header
           title={artist.name}
           ref={headerRef}
@@ -143,7 +143,8 @@ function Singer(props) {
 const mapStateToProps = state => ({
   artist: state.getIn(['singer', 'artist']),
   songsOfArtist: state.getIn(['singer', 'songsOfArtist']),
-  enterLoading: state.getIn(['singer', 'enterLoading'])
+  enterLoading: state.getIn(['singer', 'enterLoading']),
+  songsCount: state.getIn(['player', 'playList']).size // 尽量减少 toJS 操作，直接取 size 属性就代表了 list 的长度
 });
 const mapDispatchToProps = dispatch => ({
   getSingerInfoDispatch: (id) => {

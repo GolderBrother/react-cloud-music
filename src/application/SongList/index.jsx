@@ -15,7 +15,7 @@ const SongList = React.forwardRef((props, ref) => {
   };
   const renderSongList = (list = []) =>
     list.map((item, index) => (
-      <li key={`${item.al.name}_${index}`} onClick={() => selectItem(item)}>
+      <li key={`${item.al.name}_${index}`} onClick={(e) => selectItem(e, item)}>
         <span className="index">{index + 1}</span>
         <div className="info">
           <span>{item.name}</span>
