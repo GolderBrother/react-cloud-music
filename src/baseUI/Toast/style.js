@@ -9,23 +9,23 @@ export const ToastWrapper = styled.div`
     height: 50px;
     /* background: ${GlobalStyle["highlight-background-color"]}; */
     &.drop-enter{
-    opacity: 0;
-    transform: translate3d(0, 100%, 0);
+        opacity: 0;
+        transform: translate3d(0, 100%, 0);
     }
     &.drop-enter-active{
-    opacity: 1;
-    transition: all 0.3s;
-    transform: translate3d(0, 0, 0);
+        opacity: 1;
+        transition: all 0.3s;
+        transform: translate3d(0, 0, 0);
     }
     &.drop-exit-active{
-    opacity: 0;
-    transition: all 0.3s;
-    transform: translate3d(0, 100%, 0);
+        opacity: 0;
+        transition: all 0.3s;
+        transform: translate3d(0, 100%, 0);
     }
     .text{
-    line-height: 50px;
-    text-align: center;
-    color: #fff;
-    font-size: ${GlobalStyle["font-size-l"]};
+        line-height: 50px;
+        text-align: center;
+        color: #fff;
+        font-size: ${GlobalStyle["font-size-l"]};
     }
 `;

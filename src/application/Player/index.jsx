@@ -159,9 +159,9 @@ function Player(props) {
         setModeText("随机循环");
         break;
       default:
-        changeModeDispatch(newMode);
         break;
     }
+    changeModeDispatch(newMode);
   };
   // 处理歌曲播放完毕事件
   const handleEnd = () => {
