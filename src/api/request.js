@@ -35,3 +35,9 @@ export const getAlbumDetailRequest = (id) => axiosInstance.get(`/playlist/detail
  * @param {number} id 歌手 id
  */
 export const getSingerInfoRequest = (id) => axiosInstance.get(`/artists?id=${id}`);
+
+/**
+ * 获取歌词信息
+ * @param {*} id 歌曲id
+ */
+export const getLyricRequest = id => axiosInstance.get(`/lyric?id=${id}`);

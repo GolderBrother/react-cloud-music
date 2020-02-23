@@ -11,6 +11,7 @@ import {
   shuffle
 } from "../../api/utils";
 import { playMode } from '../../api/config';
+import { getLyricRequest } from '../../api/request';
 function Player(props) {
   console.log("Player props", props);
   // 用来记录目前播放时间
@@ -24,6 +25,8 @@ function Player(props) {
   const audioRef = useRef();
   const toastRef = useRef();
   const songReady = useRef(true);
+  // 歌词播放记录
+  const currentLyric  = useRef();
   const percent = isNaN(currentTime / duration) ? 0 : currentTime / duration;
   const {
     playMode: mode, // 播放模式
@@ -48,6 +51,23 @@ function Player(props) {
   const sequencePlayList = immutableSequencePlayList
     ? immutableSequencePlayList.toJS()
     : [];
+  // 获取歌词数据
+  const getLyric = async (id) => {
+    try {
+      // 歌词
+      let lyric = '';
+      const data = await getLyricRequest(id);
+      if(!data || !data.lrc) return;
+      lyric = data.lrc.lyric;
+      if(lyric) {
+        currentLyric.current = null;
+        return;
+      }
+    } catch (error) {
+      songReady.current = true;
+      audioRef.current.play();
+    }
+  }
   const clickPlaying = (e, state) => {
     e.stopPropagation();
     togglePlayingStateDispatch(state);
@@ -82,6 +102,11 @@ function Player(props) {
     if (!playingState) togglePlayingStateDispatch(true);
     changeCurrentIndexDispatch(nextIndex);
   };
+  useEffect(() => {
+    getLyric(currentSong.id);
+    setCurrentTime(0);
+    setDuration((currentSong.dt/1000) | 0);
+  }, [currentIndex, playList]);
   // 播放歌曲
   useEffect(() => {
     // 以下几种情况就不播放
