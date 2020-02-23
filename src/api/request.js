@@ -41,3 +41,22 @@ export const getSingerInfoRequest = (id) => axiosInstance.get(`/artists?id=${id}
  * @param {*} id 歌曲id
  */
 export const getLyricRequest = id => axiosInstance.get(`/lyric?id=${id}`);
+
+/**
+ * 获取热门关键词
+ */
+export const getHotKeyWordsRequest = () => axiosInstance.get(`/search/hot`);
+
+/**
+ * 搜索建议
+ * @param {string} keywords 关键词 
+ * 调用此接口 , 传入搜索关键词可获得搜索建议 , 搜索结果同时包含单曲 , 歌手 , 歌单 ,mv 信息
+ */
+export const getSuggestListRequest = (keywords = '') => axiosInstance.get(`/search/suggest?keywords=${keywords}`);
+
+/**
+ * 搜索
+ * @param {string} keywords 关键词 
+ * 调用此接口 , 传入搜索关键词可以搜索该音乐 / 专辑 / 歌手 / 歌单 / 用户 
+ */
+export const getResultSongsListRequest = (keywords = '') => axiosInstance.get(`/search?keywords=${keywords}`);

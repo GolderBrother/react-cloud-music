@@ -6,6 +6,7 @@ import Recommend from '../application/Recommend';
 import Singers from '../application/Singers';
 import Singer from '../application/Singer';
 import Album from '../application/Album';
+import Search from '../application/Search';
 
 const Routes = [{
     path: '/',
@@ -38,6 +39,11 @@ const Routes = [{
             path: '/singers/:id',
             component: Singer
         }]
+    }, {
+        path: '/search',
+        key: "search",
+        exact: true,
+        component: Search
     }]
 }];
 export default Routes;

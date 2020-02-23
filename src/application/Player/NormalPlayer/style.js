@@ -2,7 +2,7 @@ import styled, {
     keyframes
 } from 'styled-components';
 import GlobalStyle from '../../../assets/global-style';
-const rotate = keyframes `
+const rotate = keyframes`
     0% {
         transform: rotate(0);
     }
@@ -56,7 +56,7 @@ export const NormalPlayerContainer = styled.div`
     }
 `;
 
-export const Top = styled.div `
+export const Top = styled.div`
     position: relative;
     margin-bottom: 25px;
     .back {
@@ -80,18 +80,18 @@ export const Top = styled.div `
         text-align: center;
         font-size: ${GlobalStyle["font-size-l"]};
         color: ${GlobalStyle["font-color-desc"]};
-        ${GlobalStyle.noWrap ()};
+        ${GlobalStyle.noWrap()};
     }
     .subtitle {
         line-height: 20px;
         text-align: center;
         font-size: ${GlobalStyle["font-size-m"]};
         color: ${GlobalStyle["font-color-desc-v2"]};
-        ${GlobalStyle.noWrap ()};
+        ${GlobalStyle.noWrap()};
     }
 `;
 
-export const Middle = styled.div `
+export const Middle = styled.div`
     position: fixed;
     width: 100%;
     top: 8%;
@@ -101,7 +101,7 @@ export const Middle = styled.div `
     overflow: hidden;
 `;
 
-export const CDWrapper = styled.div `
+export const CDWrapper = styled.div`
     position: absolute;
     top: 10%;
     left: 0;
@@ -145,13 +145,13 @@ export const CDWrapper = styled.div `
     }
 `;
 
-export const Bottom = styled.div `
+export const Bottom = styled.div`
     position: absolute;
     bottom: 50px;
     width: 100%;
 `;
 
-export const ProgressWrapper = styled.div `
+export const ProgressWrapper = styled.div`
     display: flex;
     align-items: center;
     width: 80%;
@@ -181,7 +181,7 @@ export const ProgressWrapper = styled.div `
     }
 `;
 
-export const Operators = styled.div `
+export const Operators = styled.div`
     display: flex;
     align-items: center;
     .icon {
@@ -210,6 +210,36 @@ export const Operators = styled.div `
         i {
             font-weight: 300;
             font-size: 30px;
+        }
+    }
+`;
+
+export const LyricContainer = styled.div`
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+`;
+
+export const LyricWrapper = styled.div`
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    p {
+        line-height: 32px;
+        color: rgba (255, 255, 255, 0.5);
+        white-space: normal;
+        font-size: ${GlobalStyle['font-size-l']};
+        &.current {
+            color: #fff;
+        }
+        &.pure {
+            position: relative;
+            top: 30vh;
         }
     }
 `;

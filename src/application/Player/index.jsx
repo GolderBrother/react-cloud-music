@@ -12,6 +12,7 @@ import {
 } from "../../api/utils";
 import { playMode } from '../../api/config';
 import { getLyricRequest } from '../../api/request';
+import Lyric from './../../api/lyric-parser';
 function Player(props) {
   console.log("Player props", props);
   // 用来记录目前播放时间
@@ -22,11 +23,15 @@ function Player(props) {
   const [prevSong, setPrevSong] = useState({});
   // 当前播放模式提示文本
   const [modeText, setModeText] = useState("");
+  // 即时歌词
+  const [currentPlayingLyric, setCurrentPlayingLyric] = useState("");
   const audioRef = useRef();
   const toastRef = useRef();
   const songReady = useRef(true);
   // 歌词播放记录
-  const currentLyric  = useRef();
+  const currentLyric  = useRef({});
+  // 用来记录当前行数的
+  const currentLineNum = useRef(0);
   const percent = isNaN(currentTime / duration) ? 0 : currentTime / duration;
   const {
     playMode: mode, // 播放模式
@@ -51,18 +56,31 @@ function Player(props) {
   const sequencePlayList = immutableSequencePlayList
     ? immutableSequencePlayList.toJS()
     : [];
+  // 歌词解析完后的回调
+  const handleLyric = ({text, lineNum}) => {
+    if(!currentLineNum.current) return;
+    currentLineNum.current = lineNum;
+    setCurrentPlayingLyric(text);
+  }
   // 获取歌词数据
   const getLyric = async (id) => {
     try {
       // 歌词
       let lyric = '';
+      if(currentLyric.current) currentLyric.current.stop();
       const data = await getLyricRequest(id);
       if(!data || !data.lrc) return;
       lyric = data.lrc.lyric;
-      if(lyric) {
+      if(!lyric) {
         currentLyric.current = null;
         return;
       }
+      currentLyric.current = new Lyric(lyric, handleLyric);
+      currentLyric.current.play();
+      // 从第一行歌词开始
+      currentLineNum.current = 0;
+      // 切换到头开始播放
+      currentLyric.current.seek(0);
     } catch (error) {
       // 出错了之后不影响接下来歌曲的播放
       songReady.current = true;
@@ -222,6 +240,9 @@ function Player(props) {
           currentTime={currentTime} //当前播放时间
           duration={duration} //总时长
           percent={percent} //进度
+          currentLyric={currentLyric.current}
+          currentPlayingLyric={currentPlayingLyric}
+          currentLineNum={currentLineNum.current}
           toggleFullScreen={toggleFullScreenDispatch}
           togglePlayList={togglePlayListDispatch}
           clickPlaying={clickPlaying}
