@@ -64,6 +64,7 @@ function Player(props) {
         return;
       }
     } catch (error) {
+      // 出错了之后不影响接下来歌曲的播放
       songReady.current = true;
       audioRef.current.play();
     }
