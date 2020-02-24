@@ -7,3 +7,6 @@ export const CHANGE_CURRENT_INDEX = 'player/CHANGE_CURRENT_INDEX';
 export const CHANGE_SHOW_PLAYLIST = 'player/CHANGE_SHOW_PLAYLIST';
 export const CHANGE_CURRENT_SONG = 'player/CHANGE_CURRENT_SONG';
 export const DELETE_SONG = 'player/DELETE_SONG';
+
+// 插入歌曲到播放列表中
+export const INSERT_SONG = 'player/INSERT_SONG';

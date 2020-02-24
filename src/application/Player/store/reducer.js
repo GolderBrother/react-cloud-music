@@ -48,6 +48,55 @@ const handleDeleteSong = (state, song) => {
         'currentIndex': fromJS(currentIndex)
     });
 }
+
+// 插入歌曲到播放列表中
+const handleInsertSong = (state, song) => {
+    // 做个假的深拷贝。。
+    const playList = JSON.parse(JSON.stringify(state.get('playList').toJS()));
+    const sequencePlayList = JSON.parse(JSON.stringify(state.get('sequencePlayList').toJS()));
+    let currentIndex = state.get('currentIndex');
+    // 查找下有没有同款的歌曲
+    const fpIndex = findSongIndex(song, playList);
+    // 如果有(当前歌曲) 就直接返回原状态，不做处理
+    if (currentIndex === fpIndex && currentIndex !== -1) return state;
+    currentIndex++;
+    // 把歌放到播放列表中，放到当前播放歌曲的下一个位置
+    playList.splice(currentIndex, 0, song);
+    // 如果列表中已经存在要添加的歌，暂且称它 oldSong
+    if (fpIndex > -1) {
+        // 如果 oldSong 的索引比目前播放歌曲的索引小，那么删除它，同时当前 index 要减一
+        if (fpIndex < currentIndex) {
+            playList.splice(fpIndex, 1);
+            currentIndex--;
+        }
+    } else {
+        // 否则直接删掉 oldSong
+        playList.splice(fpIndex + 1, 0)
+    }
+
+    // 同理 sequencePlayList也要处理
+    // 插入到播放列表中的歌曲在顺序列表中的位置
+    let sequenceIndex = findSongIndex(playList[currentIndex], sequenceList) + 1;
+    // 插入的歌曲在顺序列表中的位置
+    const fsIndex = findSongIndex(song, sequenceList);
+    // 插入歌曲
+    sequencePlayList.splice(currentIndex, 0, song);
+    if (fsIndex > -1) {
+        // 跟上面类似的逻辑。如果旧的歌曲在前面就删掉，index--; 如果在后面就直接删除
+        if (fsIndex < sequenceIndex) {
+            sequenceList.splice(fsIndex, 1);
+            sequenceIndex--;
+        } else {
+            sequenceList.splice(fsIndex + 1, 1);
+        }
+    }
+    return state.merge({
+        'playList': fromJS(playList),
+        'sequencePlayList': fromJS(sequencePlayList),
+        'currentIndex': fromJS(currentIndex)
+    });
+}
+
 export default handleActions({
     [actionsType.CHANGE_FULLSCREEN]: (state, action) => {
         return state.set('fullScreen', action.payload);
@@ -77,5 +126,10 @@ export default handleActions({
         payload: song
     }) => {
         return handleDeleteSong(state, song);
+    },
+    [actionsType.INSERT_SONG]: (state, {
+        payload: song
+    }) => {
+        return handleInsertSong(state, song);
     }
 }, defaultState);

@@ -40,8 +40,14 @@ const Routes = [{
             component: Singer
         }]
     }, {
+        // 用来显示歌单
+        path: '/album:id',
+        key: 'album',
+        exact: true,
+        component: Album
+    }, {
         path: '/search',
-        key: "search",
+        key: 'search',
         exact: true,
         component: Search
     }]

@@ -289,6 +289,6 @@ const mapDispatchToProps = dispatch => ({
   changeShowPlayListDispatch: data =>
     dispatch(actions.changeShowPlayList(data)),
   changeCurrentSongDispatch: data => dispatch(actions.changeCurrentSong(data)),
-  changeModeDispatch: data => dispatch(actions.changePlayMode(data))
+  changeModeDispatch: data => dispatch(actions.changePlayMode(data)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(React.memo(Player));

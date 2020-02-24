@@ -60,3 +60,9 @@ export const getSuggestListRequest = (keywords = '') => axiosInstance.get(`/sear
  * 调用此接口 , 传入搜索关键词可以搜索该音乐 / 专辑 / 歌手 / 歌单 / 用户 
  */
 export const getResultSongsListRequest = (keywords = '') => axiosInstance.get(`/search?keywords=${keywords}`);
+
+/**
+ * 根据歌曲id获取单曲详情
+ * @param {number} id 歌曲id
+ */
+export const getSongDetailRequest = id => axiosInstance.get(`/song/detail?ids=${id}`);
