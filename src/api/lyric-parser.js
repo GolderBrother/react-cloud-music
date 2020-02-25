@@ -2,39 +2,58 @@
  * @Author: GolderBrother 
  * @Email: 1204788939@qq.com 
  * @Date: 2020-02-23 15:43:48 
- * @Last Modified by: yaohuang.zhang
- * @Last Modified time: 2020-02-23 16:38:34
+ * @Last Modified by: GolderBrother
+ * @Last Modified time: 2020-02-25 23:44:30
  * @Description: 传入歌词，按照正则表达式解析 
  * version:1.0.0
- * 解析的数据结构为：
+ * 解析后的数据结构为：
  * {
- *   txt:歌词，
+ *   text:歌词，
  *   time:ms
  * }
  */
 // 解析 [00:01.997] 这一类时间戳的正则表达式
-const TIME_EXP = /\[(\d{2,}):(\d{2})(?:\.(\d{2,3}))?\]/g;
+const TIME_EXP = /\[(\d{2,}):(\d{2})(?:[\.\:](\d{2,3}))?]/g;
 
 const STATE_PAUSE = 0;
 const STATE_PLAYING = 1;
+const tagRegMap = {
+    title: 'ti',
+    artist: 'ar',
+    album: 'al',
+    offset: 'offset',
+    by: 'by'
+}
 
+function noop() {}
 export default class Lyric {
-    constructor(lrc, handler = () => {}) {
+    constructor(lrc, handler = noop, speed) {
         this.lrc = lrc;
         this.lines = [];
+        this.tags = {};
         this.handler = handler; // 接受传入的回调
         this.state = STATE_PAUSE; //记录播放状态
         this.currentLineIndex = 0; // 当前歌曲所在的行数
         this.startStamp = 0; // 歌曲开始的时间戳
-
+        this.speed = speed || 1; // 歌曲播放速度
+        this.offset = 0
+        this._init();
+    }
+    _init(){
+        this._initTag();
         this._initLines();
     }
-
+    _initTag() {
+        for (const tag in tagRegMap) {
+            const matches = this.lrc.match(new RegExp(`\\[${tagRegMap[tag]}:([^\\]]*)]`, 'i'))
+            this.tags[tag] = matches && (matches[1] || '')
+        }
+    }
     // 解析歌曲转换成行数
     _initLines() {
         const lines = this.lrc.split('\n');
         for (let i = 0; i < lines.length; i++) {
-            const line = lines[i]; // 获取每行的歌词 如果 "[00:01.997] 作词：薛之谦"
+            const line = lines[i]; // 获取每行的歌词 如 "[00:01.997] 作词：薛之谦"
             const result = TIME_EXP.exec(line);
             if (!result) continue;
             const text = line.replace(TIME_EXP, '').trim();
@@ -61,11 +80,12 @@ export default class Lyric {
         this.currentLineIndex = this._findcurLineIndex(offset);
         // 现在正处于第 this.curLineIndex-1 行
         // 立即定位，方式是调用传来的回调函数，并把当前歌词信息传给它
-        this._callHandler (this.currentLineIndex-1);
+        this._callHandler(this.currentLineIndex - 1);
+        this.offset = offset;
         // 根据时间进度判断歌曲开始的时间戳
         this.startStamp = +new Date() - offset;
         // 表示当前这行歌词还没有播放完
-        if(this.currentLineIndex < this.lines.length) {
+        if (this.currentLineIndex < this.lines.length) {
             clearTimeout(this.timer);
             // 那就继续播放
             this._playRest(isSeek);
@@ -113,13 +133,14 @@ export default class Lyric {
             if (this.currentLineIndex < this.lines.length && this.state === STATE_PLAYING) {
                 this._playRest();
             }
-        }, delay);
+        }, (delay / this.speed)); // 倍速播放,定时器时间要成比例,比如:当速度变为 x2 的时候，其实离下一句歌词到来的时间间隔变为了原来的 1 / 2。依此类推
     }
 
     // 歌曲暂停播放后，歌词也应该相应的暂停(播放)
     togglePlay(offset) {
         if (this.state === STATE_PLAYING) { // 当前是播放状态，那就切换为暂停
-            this.stop()
+            this.stop();
+            this.offset = offset;
         } else { // 暂停 -> 播放
             this.state = STATE_PLAYING;
             this.play(offset, true);
@@ -130,13 +151,19 @@ export default class Lyric {
     stop() {
         // 置为暂停态
         this.state = STATE_PAUSE;
+        this.offset = 0;
         // 清除定时器
         clearTimeout(this.timer);
     }
 
     // 切到某个时间点播放
-    seek(offset){
+    seek(offset) {
         // 直接调用播放方法
         this.play(offset, true);
+    }
+
+    // 点击倍速播放，同步歌词
+    changeSpeed(speed) {
+        this.speed = speed;
     }
 }

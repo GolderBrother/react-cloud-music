@@ -41,3 +41,6 @@ export const getSongDetail = id => async dispatch => {
         consoel.log('根据歌曲id获取单曲详情: ', error);
     }
 }
+
+// 倍速播放
+export const changeSpeed = data => createAction(actionTypes.CHANGE_SPEED)(data);

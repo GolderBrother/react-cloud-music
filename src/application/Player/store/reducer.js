@@ -22,7 +22,8 @@ const defaultState = fromJS({
     playMode: playMode.sequence, // 播放模式
     currentIndex: 0, // 当前歌曲在播放列表的索引位置
     showPlayList: false, // 是否展示播放列表
-    currentSong: {} // 歌曲信息
+    currentSong: {}, // 歌曲信息
+    speed: 1 // 播放速度
 });
 // 删除歌曲逻辑略复杂，单独抽离出来
 const handleDeleteSong = (state, song) => {
@@ -131,5 +132,10 @@ export default handleActions({
         payload: song
     }) => {
         return handleInsertSong(state, song);
+    },
+    [actionsType.CHANGE_SPEED]: (state, {
+        payload: speed
+    }) => {
+        return state.set('speed', speed)
     }
 }, defaultState);

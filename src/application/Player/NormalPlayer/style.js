@@ -2,6 +2,8 @@ import styled, {
     keyframes
 } from 'styled-components';
 import GlobalStyle from '../../../assets/global-style';
+import needle from './imgs/needle.png';
+import disc from './imgs/disc.png';
 const rotate = keyframes`
     0% {
         transform: rotate(0);
@@ -57,12 +59,17 @@ export const NormalPlayerContainer = styled.div`
 `;
 
 export const Top = styled.div`
-    position: relative;
-    margin-bottom: 25px;
+    width: 100%;
+    height: 8%;
+    box-sizing: border-box;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid ${GlobalStyle["border-color-v2"]};
+    padding-bottom: 5px;
     .back {
-        position: absolute;
-        top: 0;
-        left: 6px;
+        margin-left: 5px;
         z-index: 50;
         .iconfont {
             display: block;
@@ -72,6 +79,12 @@ export const Top = styled.div`
             font-weight: bold;
             transform: rotate(90deg);
         }
+    }
+    .text {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
     }
     .title {
         width: 70%;
@@ -110,23 +123,43 @@ export const CDWrapper = styled.div`
     height: 80vw;
     margin: auto;
     box-sizing: border-box;
-    // border: 4px solid rgba(228, 228, 228, 0.1);
-    border-radius: 50%;
+    .needle {
+        position: absolute;
+        top: -6.67vw;
+        left: 48vw;
+        width: 25vw;
+        height: 40vw;
+        z-index: 100;
+        background-image: url(${needle});
+        ${GlobalStyle.bgFull()}
+        transform-origin: 4.5vw 4.5vw;
+        transform: rotate(0deg);
+        background-position: 50% center;
+        background-repeat: no-repeat;
+        transition: all 0.3s ease 0s;
+        &.pause {
+            transform:rotate(-30deg);
+        }
+    }
     .cd {
-        width: 100%;
-        height: 100%;
+        top: 16%;
+        position: absolute;
+        width: 70%;
+        height: 70vw;
+        background-image: url(${disc});
+        ${GlobalStyle.bgFull()}
+        border: 4px solid ${GlobalStyle["border-color-v2"]};
         border-radius: 50%;
+        background-position: 50% center;
         .image {
             position: absolute;
-            left: 0px;
-            right: 0px;
-            top: 0px;
-            bottom: 0px;
-            width: 100%;
-            height: 100%;
+            left: 0;right: 0;
+            top: 0;bottom: 0;
+            width: 68%;
+            height: 68%;
             margin: auto;
             border-radius: 50%;
-            border: 10px solid rgba(255, 255, 255, 0.1);
+            // border: 10px solid rgba(255, 255, 255, 0.1);
         }
         .play {
             animation: ${rotate} 20s linear infinite;
@@ -136,7 +169,10 @@ export const CDWrapper = styled.div`
         }
     }
     .playing_lyric {
-        margin-top: 20px;
+        position: absolute;
+        margin: auto;
+        width: 80%;
+        top: 95vw;
         font-size: 14px;
         line-height: 20px;
         white-space: normal;
@@ -241,5 +277,36 @@ export const LyricWrapper = styled.div`
             position: relative;
             top: 30vh;
         }
+    }
+`;
+
+export const SpeedList = styled.div`
+    width: 70%;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    height: 30px;
+    justify-content: space-around;
+    overflow: hidden;
+    >span:first-of-type {
+        display: block;
+        flex: 0 0 auto;
+        padding: 5px 0;
+        color: ${GlobalStyle["font-color-desc-v2"]};
+        font-size: ${GlobalStyle["font-size-m"]};
+        vertical-align: middle;
+    }
+`;
+
+export const SpeedListItem = styled.div`
+    flex: 0 0 auto;
+    font-size: ${GlobalStyle["font-size-m"]};
+    padding: 5px 5px;
+    border-radius: 10px;
+    color: ${GlobalStyle["font-color-desc-v2"]};
+    &.selected {
+        color: ${GlobalStyle["theme-color"]};
+        border: 1px solid ${GlobalStyle["theme-color"]};
+        opacity: 0.8;
     }
 `;

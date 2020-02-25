@@ -10,3 +10,6 @@ export const DELETE_SONG = 'player/DELETE_SONG';
 
 // 插入歌曲到播放列表中
 export const INSERT_SONG = 'player/INSERT_SONG';
+
+// 倍速播放
+export const CHANGE_SPEED = 'player/CHANGE_SPEED';
