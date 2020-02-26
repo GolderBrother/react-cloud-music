@@ -115,15 +115,15 @@ export const Middle = styled.div`
 `;
 
 export const CDWrapper = styled.div`
-    position: absolute;
-    top: 10%;
-    left: 0;
-    right: 0;
-    width: 80%;
-    height: 80vw;
     margin: auto;
+    position: absolute;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
     box-sizing: border-box;
-    .needle {
+    .needle{
         position: absolute;
         top: -6.67vw;
         left: 48vw;
@@ -131,44 +131,40 @@ export const CDWrapper = styled.div`
         height: 40vw;
         z-index: 100;
         background-image: url(${needle});
-        ${GlobalStyle.bgFull()}
+        ${GlobalStyle.bgFull()};
         transform-origin: 4.5vw 4.5vw;
-        transform: rotate(0deg);
-        background-position: 50% center;
-        background-repeat: no-repeat;
-        transition: all 0.3s ease 0s;
-        &.pause {
-            transform:rotate(-30deg);
+        transition: all 0.3s;
+        transform: rotate(0);
+        &.pause{
+          transform: rotate(-30deg);
         }
-    }
-    .cd {
+      }
+      .cd {
         top: 16%;
         position: absolute;
         width: 70%;
         height: 70vw;
         background-image: url(${disc});
-        ${GlobalStyle.bgFull()}
         border: 4px solid ${GlobalStyle["border-color-v2"]};
         border-radius: 50%;
-        background-position: 50% center;
+        ${GlobalStyle.bgFull()};
         .image {
-            position: absolute;
-            left: 0;right: 0;
-            top: 0;bottom: 0;
-            width: 68%;
-            height: 68%;
-            margin: auto;
-            border-radius: 50%;
-            // border: 10px solid rgba(255, 255, 255, 0.1);
+          position: absolute;
+          left: 0;right: 0;
+          top: 0;bottom: 0;
+          width: 68%;
+          height: 68%;
+          margin: auto;
+          border-radius: 50%;
         }
         .play {
-            animation: ${rotate} 20s linear infinite;
-            &.pause {
-                animation-play-state: paused;
-            }
+          animation: ${rotate} 20s linear infinite;
+          &.pause{
+            animation-play-state: paused;
+          }
         }
-    }
-    .playing_lyric {
+      }
+      .playing_lyric {
         position: absolute;
         margin: auto;
         width: 80%;
@@ -177,8 +173,8 @@ export const CDWrapper = styled.div`
         line-height: 20px;
         white-space: normal;
         text-align: center;
-        color: rgba (255, 255, 255, 0.5);
-    }
+        color: rgba(255, 255, 255, 0.5);
+      }
 `;
 
 export const Bottom = styled.div`

@@ -88,7 +88,7 @@ export const ListContent = styled.div`
         }
         .text {
             flex: 1;
-            ${style.noWrap ()}
+            ${GlobalStyle.noWrap ()}
             font-size: ${GlobalStyle["font-size-m"]};
             color: ${GlobalStyle["font-color-desc-v2"]};
             .icon-favorite {

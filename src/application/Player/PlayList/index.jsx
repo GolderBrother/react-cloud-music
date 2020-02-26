@@ -8,12 +8,16 @@ import {
   ListContent
 } from "./style";
 import * as actions from "../store/actions";
-import { getPrefixStyle } from "../../../api/utils";
-import list from "../../../components/list";
+// import list from "../../../components/list";
 import { playMode } from "../../../api/config";
 import Scroll from "../../../baseUI/scroll";
-import Confirm from "../../../baseUI/Confirm";
-import { getName, findSongIndex, shuffle, getPrefixStyle } from "../../api/utils";
+import Confirm from "../../../baseUI/confirm";
+import {
+  getName,
+  findSongIndex,
+  shuffle,
+  getPrefixStyle
+} from "../../../api/utils";
 function PlayList(props) {
   const [show, setShow] = useState(false);
   const [canTouch, setCanTouch] = useState(false);
@@ -23,6 +27,7 @@ function PlayList(props) {
   const [initialed, setInitialed] = useState(0);
   // 用来记录用户滑动的距离
   const [distance, setDistance] = useState(0);
+  const listContentRef = useRef();
   const playListWrapperRef = useRef();
   const listWrapperRef = useRef();
   const confirmRef = useRef();
@@ -34,6 +39,7 @@ function PlayList(props) {
     sequencePlayList: immutableSequencePlayList,
     currentSong: immutableCurrentSong
   } = props;
+  const { clearPreSong = () => {} } = props;
   const playList = (immutablePlayList && immutablePlayList.toJS()) || [];
   const sequencePlayList =
     (immutableSequencePlayList && immutableSequencePlayList.toJS()) || [];
@@ -87,7 +93,7 @@ function PlayList(props) {
     const className = isCurrent ? "icon-play" : "";
     return (
       <i
-        class={`current iconfont ${className}`}
+        className={`current iconfont ${className}`}
         dangerouslySetInnerHTML={{ __html: content }}
       ></i>
     );
@@ -114,7 +120,7 @@ function PlayList(props) {
       default:
         break;
     }
-    changeModeDispatch(newMode);
+    changePlayModeDispatch(newMode);
   };
   const getPlayMode = () => {
     let content, text;
@@ -131,57 +137,62 @@ function PlayList(props) {
         content = "&#xe61b;";
         text = "随机播放";
     }
-    // 切歌 改变当前索引值
-    const handleChangeCurrentIndex = index => {
-      if (currentIndex === index) return;
-      changeCurrentIndexDispatch(index);
-    };
     return (
       <div onClick={changeMode}>
-        <i class="iconfont" dangerouslySetInnerHTML={{ __html: content }}></i>
-        <span class="text">{text}</span>
+        <i className="iconfont" dangerouslySetInnerHTML={{ __html: content }}></i>
+        <span className="text" onClick={changeMode}>{text}</span>
       </div>
     );
   };
+  // 切歌 改变当前索引值
+  const handleChangeCurrentIndex = index => {
+    if (currentIndex === index) return;
+    changeCurrentIndexDispatch(index);
+  };
   // 删除歌曲
-  const handleSeleteSong = (e, item) => {
+  const handleDeleteSong = (e, item) => {
     e.stopPropagation();
     deleteSongDispatch(item);
   };
   // 清空全部歌曲
   const handleConfirmClear = () => {
     clearDispatch();
+    // 修复清空播放列表后点击同样的歌曲，播放器不出现的bug
+    clearPreSong();
   };
   // 显示清空所有歌曲的确认框
   const handleShowClearConfirm = () => {
     confirmRef && confirmRef.current && confirmRef.current.show();
   };
   // 添加下滑关闭及反弹效果
-  const handleTouchStart = (e) => {
+  const handleTouchStart = e => {
     // 已经触发了touchStart就不能那个再次触发
-    if(!canTouch || initialed) return;
+    if (!canTouch || initialed) return;
     listWrapperRef.current.style["transition"] = "";
     setStartY(e.nativeEvent.touches[0].pageY);
     setInitialed(true);
   };
-  const handleTouchMove = (e) => {
-    if(!canTouch || !initialed) return;
+  const handleTouchMove = e => {
+    if (!canTouch || !initialed) return;
     const distance = e.nativeEvent.touches[0].pageY - startY;
-    if(distance < 0) return;
-    setDistance(distance);// 记录下滑距离
-    listWrapperRef.current.style[transformPrefix] = `translate3d(0, ${distance}px, 0)`;
+    if (distance < 0) return;
+    setDistance(distance); // 记录下滑距离
+    listWrapperRef.current.style[
+      transformPrefix
+    ] = `translate3d(0, ${distance}px, 0)`;
   };
-  const handleTouchEnd = (e) => {
+  const handleTouchEnd = e => {
     setInitialed(false);
     // 这边设置阈值威150
-    if(distance > 150) {
+    if (distance > 150) {
       // 滑动距离大于这个阈值就关闭playList
       togglePlayListDispatch(false);
-    }else{
+    } else {
       // 否则就反弹回去
-      if(listWrapperRef && listWrapperRef.current) {
-        listWrapperRef.current.style['transition'] = 'all 0.3s';
-        listWrapperRef.current.style[transformPrefix] = 'translate3d(0px, 0px, 0px)';
+      if (listWrapperRef && listWrapperRef.current) {
+        listWrapperRef.current.style["transition"] = "all 0.3s";
+        listWrapperRef.current.style[transformPrefix] =
+          "translate3d(0px, 0px, 0px)";
       }
     }
   };
@@ -190,6 +201,11 @@ function PlayList(props) {
     const canTouch = pos.y === 0;
     setCanTouch(canTouch);
   };
+  const getFavoriteIcon = (item) => {
+    return (
+      <i className="iconfont">&#xe601;</i>
+    )
+  }
   return (
     <CSSTransition
       in={showPlayList}
@@ -237,14 +253,15 @@ function PlayList(props) {
                     >
                       {getCurrentIcon(item)}
                       <span className="text">
-                        多想在平庸的生活拥抱你 - 隔壁老樊
+                        {/* 多想在平庸的生活拥抱你 - 隔壁老樊 */}
+                        {item.name} - {getName(item.ar)}
                       </span>
                       <span className="like">
-                        <i className="iconfont">&#xe601;</i>
+                        {getFavoriteIcon(item)}
                       </span>
                       <span
                         className="delete"
-                        onClick={e => handleSeleteSong(e, item)}
+                        onClick={e => handleDeleteSong(e, item)}
                       >
                         <i className="iconfont">&#xe63d;</i>
                       </span>

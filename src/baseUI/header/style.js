@@ -5,7 +5,7 @@ export const HeaderContainer = styled.div `
     display: flex;
     height: 40px;
     width: 100%;
-    padding: 0 5px 10px;
+    padding: 0 10px 5px;
     line-height: 40px;
     z-index: 100;
     color: ${GlobalStyle['font-color-light']};

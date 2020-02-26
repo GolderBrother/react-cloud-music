@@ -13,6 +13,7 @@ import {
 import { playMode } from "../../api/config";
 import { getLyricRequest } from "../../api/request";
 import Lyric from "./../../api/lyric-parser";
+import PlayList from "./PlayList";
 function Player(props) {
   console.log("Player props", props);
   // 用来记录目前播放时间
@@ -33,6 +34,7 @@ function Player(props) {
   // 用来记录当前行数的
   const currentLineNum = useRef(0);
   const percent = isNaN(currentTime / duration) ? 0 : currentTime / duration;
+  console.log("percent", percent);
   const {
     playMode: mode, // 播放模式
     playList: immutablePlayList,
@@ -54,10 +56,61 @@ function Player(props) {
     changeSpeedDispatch
   } = props;
   const currentSong = immutableCurrentSong ? immutableCurrentSong.toJS() : {};
+  console.log("currentSong", currentSong);
   const playList = immutablePlayList ? immutablePlayList.toJS() : [];
   const sequencePlayList = immutableSequencePlayList
     ? immutableSequencePlayList.toJS()
     : [];
+  // 播放歌曲
+  useEffect(() => {
+    // 以下几种情况就不播放
+    console.log("playList", playList);
+    console.log("currentIndex", currentIndex);
+    if (
+      !playList.length ||
+      currentIndex === -1 ||
+      !playList[currentIndex] ||
+      playList[currentIndex].id === prevSong.id ||
+      !songReady.current // 标志位为 false, 就不能切割
+    )
+      return;
+    // 把标志位置为 false, 表示现在新的资源没有缓冲完成，不能切歌
+    songReady.current = false;
+    const current = playList[currentIndex];
+    console.log("current", current);
+    changeCurrentSongDispatch(current); // 赋值 currentSong
+    setPrevSong(current);
+    setCurrentPlayingLyric("");
+    if (audioRef && audioRef.current) {
+      audioRef.current.src = getSongUrl(current.id);
+      audioRef.current.autoplay = true;
+      // 这里加上对播放速度的控制
+      audioRef.current.playbackRate = speed;
+      /* setTimeout(() => {
+        // 注意，play 方法返回的是一个 promise 对象
+        audioRef.current.play().then(() => {
+          songReady.current = true; // 缓冲完了，标记为置为true，才表示可以切歌
+        });
+      }); */
+    }
+    togglePlayingStateDispatch(true); //  设置播放状态
+    getLyric(current.id);
+    setCurrentTime(0); // 从头开始播放
+    setDuration((current / 1000) | 0); // 设置歌曲时长 按位或 求整
+  }, [currentIndex, playList]);
+  // 监听播放状态来控制音频
+  useEffect(() => {
+    playingState ? audioRef.current.play() : audioRef.current.pause();
+  }, [playingState]);
+  useEffect(() => {
+    if (!fullScreen) return;
+    if (currentLyric.current && currentLyric.current.lines.length) {
+      handleLyric({
+        lineNum: currentLineNum.current,
+        txt: currentLyric.current.lines[currentLineNum.current].txt
+      });
+    }
+  }, [fullScreen]);
   // 歌词解析完后的回调
   const handleLyric = ({ text, lineNum }) => {
     if (!currentLineNum.current) return;
@@ -70,6 +123,10 @@ function Player(props) {
       // 歌词
       let lyric = "";
       if (currentLyric.current) currentLyric.current.stop();
+      // 避免songReady恒为false的情况
+      setTimeout(() => {
+        songReady.current = true;
+      }, 3000);
       const data = await getLyricRequest(id);
       if (!data || !data.lrc) return;
       lyric = data.lrc.lyric;
@@ -77,7 +134,7 @@ function Player(props) {
         currentLyric.current = null;
         return;
       }
-      currentLyric.current = new Lyric(lyric, handleLyric);
+      currentLyric.current = new Lyric(lyric, handleLyric, speed);
       currentLyric.current.play();
       // 从第一行歌词开始
       currentLineNum.current = 0;
@@ -85,12 +142,13 @@ function Player(props) {
       currentLyric.current.seek(0);
     } catch (error) {
       // 出错了之后不影响接下来歌曲的播放
+      currentLyric.current = "";
       songReady.current = true;
       audioRef.current.play();
     }
   };
   // 倍速播放功能
-  const clickSpeed = (newSpeed) => {
+  const clickSpeed = newSpeed => {
     newSpeed = Number(newSpeed || 1);
     changeSpeedDispatch(newSpeed);
     // playbackRate 为歌词播放的速度，可修改
@@ -102,12 +160,18 @@ function Player(props) {
   const clickPlaying = (e, state) => {
     e.stopPropagation();
     togglePlayingStateDispatch(state);
+    if (currentLyric.current) {
+      currentLyric.current.togglePlay(currentTime * 1000);
+    }
   };
   // 循环播放
   const handleLoop = () => {
     audioRef.current.currentTime = 0;
     togglePlayingStateDispatch(true);
     audioRef.current.play();
+    if (currentLyric.current) {
+      currentLyric.current.seek(0);
+    }
   };
   // 切换到上一首
   const handlePrev = () => {
@@ -129,55 +193,18 @@ function Player(props) {
       return;
     }
     let nextIndex = currentIndex + 1;
-    if (nextIndex > playList.length - 1) nextIndex = 0;
+    if (nextIndex === playList.length) nextIndex = 0;
     if (!playingState) togglePlayingStateDispatch(true);
     changeCurrentIndexDispatch(nextIndex);
   };
-  useEffect(() => {
-    getLyric(currentSong.id);
-    setCurrentTime(0);
-    setDuration((currentSong.dt / 1000) | 0);
-  }, [currentIndex, playList]);
-  // 播放歌曲
-  useEffect(() => {
-    // 以下几种情况就不播放
-    if (
-      !playList.length ||
-      currentIndex === -1 ||
-      !playList[currentIndex] ||
-      playList[currentIndex].id === prevSong ||
-      !songReady.current // 标志位为 false, 就不能切割
-    )
-      return;
-    // 把标志位置为 false, 表示现在新的资源没有缓冲完成，不能切歌
-    songReady.current = false;
-    const current = playList[currentIndex];
-    changeCurrentSongDispatch(current); // 赋值 currentSong
-    setPrevSong(current);
-    setPlayingLyric("");
-    if (audioRef && audioRef.current) {
-      audioRef.current.src = getSongUrl(current.id);
-      audioRef.current.autoplay = true;
-      // 这里加上对播放速度的控制
-      audio.current.playbackRate = speed;
-      setTimeout(() => {
-        // 注意，play 方法返回的是一个 promise 对象
-        audioRef.current.play().then(() => {
-          songReady.current = true; // 缓冲完了，标记为置为true，才表示可以切歌
-        });
-      });
+  // 处理歌曲播放完毕事件
+  const handleEnd = () => {
+    if (mode === playMode.loop) {
+      handleLoop(); // 循环播放
+    } else {
+      handleNext(); // 切换到下一首
     }
-    togglePlayingStateDispatch(true); //  设置播放状态
-    setCurrentTime(0); // 从头开始播放
-    setDuration((current / 1000) | 0); // 设置歌曲时长 按位或 求整
-  }, []);
-  // 监听播放状态来控制音频
-  useEffect(() => {
-    playingState ? audioRef.current.play() : audioRef.current.pause();
-  }, [playingState]);
-  useEffect(() => {
-    changeCurrentIndexDispatch(0);
-  });
+  };
   // 更新当前播放时间
   const updateTime = e => {
     setCurrentTime(e.target.currentTime);
@@ -193,6 +220,9 @@ function Player(props) {
     audioRef.current.currentTime = newTime;
     // 如果当前是暂停状态，进度条改变后就继续播放
     if (!playingState) togglePlayingStateDispatch(true);
+    if (currentLyric.current) {
+      currentLyric.current.seek(newTime * 1000);
+    }
   };
   // 切换播放模式
   const changeMode = () => {
@@ -206,7 +236,7 @@ function Player(props) {
         setModeText("顺序循环");
         break;
       case 1: //单曲循环
-        changeCurrentIndexDispatch(newMode);
+        togglePlayListDispatch(sequencePlayList);
         setModeText("单曲循环");
         break;
       case 2: //随机循环
@@ -220,40 +250,28 @@ function Player(props) {
         break;
     }
     changeModeDispatch(newMode);
-  };
-  // 处理歌曲播放完毕事件
-  const handleEnd = () => {
-    if (mode === playMode.loop) {
-      handleLoop(); // 循环播放
-    } else {
-      handleNext(); // 切换到下一首
-    }
+    toastRef.current.show();
   };
   const handleError = error => {
     songReady.current = true;
     alert("播放出错");
-    console.log(`播放出错：${String(error)}`);
+    handleNext();
+    console.log(`播放出错：${error}`);
   };
   // 关于业务逻辑的部分都是在父组件完成然后直接传给子组件，而子组件虽然也有自己的状态，但大部分是控制UI层面的，逻辑都是从props中接受， 这也是展示了UI和逻辑分离的组件设计模式
   return (
     <div>
-      <MiniPlayer
-        percent={percent}
-        song={currentSong}
-        fullScreen={fullScreen}
-        toggleFullScreen={toggleFullScreenDispatch}
-        togglePlayList={togglePlayListDispatch}
-        clickPlaying={clickPlaying}
-      />
       {isPlainObject(currentSong) ? null : (
         <NormalPlayer
           mode={mode}
           song={currentSong}
           fullScreen={fullScreen}
           playing={playingState} //播放状态
-          currentTime={currentTime} //当前播放时间
           duration={duration} //总时长
           percent={percent} //进度
+          modeText={modeText} // 当前模式
+          currentTime={currentTime} //当前播放时间
+          speed={speed} // 当前播放速度
           currentLyric={currentLyric.current}
           currentPlayingLyric={currentPlayingLyric}
           currentLineNum={currentLineNum.current}
@@ -261,13 +279,25 @@ function Player(props) {
           togglePlayList={togglePlayListDispatch}
           clickPlaying={clickPlaying}
           onProgressChange={onProgressChange}
-          handleLoop={handleLoop}
+          // handleLoop={handleLoop}
           handlePrev={handlePrev}
           handleNext={handleNext}
           changeMode={changeMode}
           clickSpeed={clickSpeed} // 倍速播放
         />
       )}
+      {isPlainObject(currentSong) ? null : (
+        <MiniPlayer
+          playing={playingState} //播放状态
+          percent={percent}
+          song={currentSong}
+          fullScreen={fullScreen}
+          toggleFullScreen={toggleFullScreenDispatch}
+          togglePlayList={togglePlayListDispatch}
+          clickPlaying={clickPlaying}
+        />
+      )}
+      <PlayList clearPreSong={setPrevSong.bind(null, {})}></PlayList>
       <audio
         ref={audioRef}
         src={getSongUrl((currentSong[0] && currentSong[0].id) || "")}

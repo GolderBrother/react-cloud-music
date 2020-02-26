@@ -38,7 +38,7 @@ export const getSongDetail = id => async dispatch => {
         const song = data.songs[0];
         dispatch(insertSong(song));
     } catch (error) {
-        consoel.log('根据歌曲id获取单曲详情: ', error);
+        console.log('根据歌曲id获取单曲详情: ', error);
     }
 }
 

@@ -9,7 +9,7 @@ import Home from '../application/Home';
 // import Search from '../application/Search';
 const SuspenseComponent = Component => props => {
     return (
-        <Suspense>
+        <Suspense fallback={null}>
             <Component {...props} />
         </Suspense>
     )

@@ -12,7 +12,7 @@ import {
 } from "./style";
 import { getName, getPrefixStyle, formatPlayTime } from "../../../api/utils";
 import ProgressBar from "../../../baseUI/progressBar";
-import { playMode, speedList } from "../../api/config";
+import { playMode, speedList } from "../../../api/config";
 import Scroll from "../../../baseUI/scroll";
 import {
   LyricContainer,
@@ -221,7 +221,7 @@ function NormalPlayer(props) {
                   className="lyric_wrapper"
                   style={{ visibility: isLyric ? "visible" : "hidden" }}
                 >
-                  {currentLyric ? (
+                  {currentLyric && currentLyric.lines ? (
                     currentLyric.lines.map((item, index) => {
                       // 为了拿到每一行歌词的 DOM 对象，后面滚动歌词需要！
                       lyricLineRef.current[index] = React.createRef();
@@ -248,15 +248,15 @@ function NormalPlayer(props) {
         <Bottom className="bottom">
           <SpeedList className="speed-Speedlist">
             <span>倍速听歌</span>
-            {speedList.map((item, index) => {
+            {speedList.map((item, index) => (
               <SpeedListItem
                 key={item.key}
                 className={speed === index ? "selected" : ""}
                 onClick={() => clickSpeed(item.key)}
               >
                 {item.name}
-              </SpeedListItem>;
-            })}
+              </SpeedListItem>
+            ))}
           </SpeedList>
           <ProgressWrapper>
             <span className="time time-l">{formatPlayTime(currentTime)}</span>
@@ -274,9 +274,7 @@ function NormalPlayer(props) {
               <i
                 className="iconfont"
                 dangerouslySetInnerHTML={{ __html: getPlayMode() }}
-              >
-                &#xe625;
-              </i>
+              ></i>
             </div>
             <div className="icon i-left" onClick={handlePrev}>
               <i className="iconfont">&#xe6e1;</i>

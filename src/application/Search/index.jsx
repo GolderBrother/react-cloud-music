@@ -138,6 +138,7 @@ function Search(props) {
     useEffect(() => {
         setShow(true);
         // 只有不存在才获取，存在直接用缓存的，不在重新获取
+        const hotList = immutableHotList ? immutableHotList.toJS() : [];
         if (!hotList.size) getHotKeyWordsDispatch();
     });
     return (

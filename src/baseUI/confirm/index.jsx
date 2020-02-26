@@ -6,7 +6,7 @@ const Confirm = forwardRef((props, ref) => {
   const { text, confirmBtnText, cancelBtnText } = props;
   const { handleConfirm } = props;
   // 给外层父组件暴露当前组件的方法，供调用
-  useImperativeHandle(() => ({
+  useImperativeHandle(ref, () => ({
     show() {
       setShow(true);
     }

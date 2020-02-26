@@ -242,4 +242,7 @@ export const speedList = [{
         key: 2,
         name: "x2"
     }
-]
+];
+
+//歌单一页限定歌曲数量
+export const ONE_PAGE_COUNT = 50;

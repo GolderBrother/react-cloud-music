@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useCallback } from "react";
 import { MiniPlayerContainer } from "./style";
 import { getName } from "../../../api/utils";
 import { CSSTransition } from "react-transition-group";
@@ -8,6 +8,8 @@ function MiniPlayer(props) {
   const { song = {}, fullScreen, playing, percent } = props;
   const { toggleFullScreen, clickPlaying, togglePlayList } = props;
   const miniPlayerRef = useRef();
+  const miniWrapperRef = useRef();
+  const miniImageRef = useRef();
   const onEnter = () => {
     if (miniPlayerRef) {
       miniPlayerRef.current.style.display = "flex";
@@ -23,10 +25,13 @@ function MiniPlayer(props) {
   };
 
   // 显示播放列表
-  const showPlayList = (e) => {
-    e.stopPropagation();
-    togglePlayList(true);
-  }
+  const handleTogglePlayList = useCallback(
+    e => {
+      e.stopPropagation();
+      togglePlayList(true);
+    },
+    [togglePlayList]
+  );
 
   // mock percent
   // const percent = 0.2;
@@ -40,8 +45,9 @@ function MiniPlayer(props) {
     >
       <MiniPlayerContainer ref={miniPlayerRef} onClick={showFullScreen}>
         <div className="icon">
-          <div className="imgWrapper">
+          <div className="imgWrapper" ref={miniWrapperRef}>
             <img
+              ref={miniImageRef}
               className={`play ${playing ? "" : "pause"}`}
               src={(song.al && song.al.picUrl) || ""}
               width="40"
@@ -56,24 +62,14 @@ function MiniPlayer(props) {
         </div>
         <div className="control">
           <ProgressCircle radius={32} percent={percent}>
-            {playing ? (
-              <i
-                className="iconfont icon-mini icon-pause"
-                onClick={e => clickPlaying(e, false)}
-              >
-                &#xe650;
-              </i>
-            ) : (
-              <i
-                className="iconfont icon-mini icon-play"
-                onClick={e => clickPlaying(e, true)}
-              >
-                &#xe61e;
-              </i>
-            )}
+            { playing ? 
+              <i className="icon-mini iconfont icon-pause" onClick={e => clickPlaying(e, false)}>&#xe650;</i>
+              :
+              <i className="icon-mini iconfont icon-play" onClick={e => clickPlaying(e, true)}>&#xe61e;</i> 
+            }
           </ProgressCircle>
         </div>
-        <div className="control" onClick={showPlayList}>
+        <div className="control" onClick={handleTogglePlayList}>
           <i className="iconfont">&#xe640;</i>
         </div>
       </MiniPlayerContainer>

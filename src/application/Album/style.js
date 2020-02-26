@@ -160,7 +160,6 @@ export const SongWrapper = styled.div`
     box-sizing: border-box;
     margin-left: 10px;
     position: relative;
-    -webkit-box-pack: justify;
     justify-content: space-between;
     padding: 10px 0px;border-bottom: 1px solid ${GlobalStyle["border-color"]};
     .play_all {
@@ -174,6 +173,7 @@ export const SongWrapper = styled.div`
       }
       > span {
         vertical-align: top;
+        font-size: ${GlobalStyle["font-size-m"]};
       }
       .sum {
         font-size: ${GlobalStyle["font-size-s"]};

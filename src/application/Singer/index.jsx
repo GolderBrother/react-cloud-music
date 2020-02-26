@@ -7,14 +7,15 @@ import {
   ImgWrapper,
   CollectButton,
   BgLayer,
-  SongListWrapper
+  SongListWrapper,
+  EnterLoading
 } from "./style";
 import { CSSTransition } from "react-transition-group";
 import { HEADER_HEIGHT } from "../../api/config";
-import { connect } from 'react-redux';
-import { getSingerInfo, changeEnterLoading } from './store/actions';
-import Loading from '../../baseUI/loading/index';
-import MusicNote from '../../baseUI/music-note';
+import { connect } from "react-redux";
+import { getSingerInfo, changeEnterLoading } from "./store/actions";
+import Loading from "../../baseUI/loading/index";
+import MusicNote from "../../baseUI/music-note";
 function Singer(props) {
   const [showStatus, setShowStatus] = useState(true);
   // 用来记录图片初始高度
@@ -31,8 +32,13 @@ function Singer(props) {
   const scrollRef = useRef();
   const { getSingerInfoDispatch } = props;
 
-  const { artist: immutableArtist, songsOfArtist: immutableSongsOfArtist, enterLoading, songsCount } = props;
-  console.log('enterLoading', enterLoading);
+  const {
+    artist: immutableArtist,
+    songsOfArtist: immutableSongsOfArtist,
+    enterLoading,
+    songsCount
+  } = props;
+  console.log("enterLoading", enterLoading);
   const artist = (immutableArtist && immutableArtist.toJS()) || {};
   const songs = (immutableSongsOfArtist && immutableSongsOfArtist.toJS()) || [];
   const setShowStatusFalse = useCallback(() => {
@@ -94,10 +100,9 @@ function Singer(props) {
     scrollRef.current.refresh();
   }, []);
   const musicNoteRef = useRef();
-
   const musicAnimation = (x, y) => {
-    musicNoteRef.current.startAnimation({x, y});
-  }
+    musicNoteRef.current.startAnimation({ x, y });
+  };
 
   /* 解释一下我为什么要用定时器？
 
@@ -130,24 +135,33 @@ function Singer(props) {
         <SongListWrapper ref={songListWrapperRef}>
           {/* 歌手列表，需要引用歌单详情(Album)的歌曲列表组件 */}
           <Scroll ref={scrollRef} onScroll={handleScroll}>
-            <SongList songs={songs} showCollect={false} musicAnimation={musicAnimation}></SongList>
-            <MusicNote ref={musicNoteRef}></MusicNote>
+            <SongList
+              songs={songs}
+              showCollect={false}
+              usePageSplit={false}
+              musicAnimation={musicAnimation}
+            ></SongList>
           </Scroll>
         </SongListWrapper>
-        {Boolean(enterLoading) ? <Loading></Loading> : null}
+        {Boolean(enterLoading) ? (
+          <EnterLoading style={{ zIndex: 100 }}>
+            <Loading></Loading>
+          </EnterLoading>
+        ) : null}
+        <MusicNote ref={musicNoteRef}></MusicNote>
       </Container>
     </CSSTransition>
   );
 }
 
 const mapStateToProps = state => ({
-  artist: state.getIn(['singer', 'artist']),
-  songsOfArtist: state.getIn(['singer', 'songsOfArtist']),
-  enterLoading: state.getIn(['singer', 'enterLoading']),
-  songsCount: state.getIn(['player', 'playList']).size // 尽量减少 toJS 操作，直接取 size 属性就代表了 list 的长度
+  artist: state.getIn(["singer", "artist"]),
+  songsOfArtist: state.getIn(["singer", "songsOfArtist"]),
+  enterLoading: state.getIn(["singer", "enterLoading"]),
+  songsCount: state.getIn(["player", "playList"]).size // 尽量减少 toJS 操作，直接取 size 属性就代表了 list 的长度
 });
 const mapDispatchToProps = dispatch => ({
-  getSingerInfoDispatch: (id) => {
+  getSingerInfoDispatch: id => {
     dispatch(changeEnterLoading(true));
     dispatch(getSingerInfo(id));
   }

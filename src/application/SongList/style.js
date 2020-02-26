@@ -29,6 +29,7 @@ export const SongListWrapper = styled.ul`
       ${GlobalStyle.noWrap()}
       > span {
         ${GlobalStyle.noWrap()}
+        font-size: ${GlobalStyle["font-size-m"]};
         &:first-child {
           color: ${GlobalStyle["font-color-desc"]};
         }
@@ -48,13 +49,13 @@ export const SongWrapper = styled.div`
     box-sizing: border-box;
     margin-left: 10px;
     position: relative;
-    -webkit-box-pack: justify;
     justify-content: space-between;
     padding: 10px 0px;border-bottom: 1px solid ${GlobalStyle["border-color"]};
     .play_all {
       display: inline-block;
       line-height: 24px;
       color: ${GlobalStyle["font-color-desc"]};
+      font-size: ${GlobalStyle["font-size-l"]};
       .iconfont {
         font-size: 24px;
         margin-right: 10px;
@@ -62,8 +63,10 @@ export const SongWrapper = styled.div`
       }
       > span {
         vertical-align: top;
+        font-size: ${GlobalStyle["font-size-m"]};
       }
       .sum {
+        margin-left: 5px;
         font-size: ${GlobalStyle["font-size-s"]};
         color: ${GlobalStyle["font-color-desc-v2"]};
       }
@@ -130,6 +133,7 @@ export const SongList = styled.ul`
       ${GlobalStyle.noWrap()}
       > span {
         ${GlobalStyle.noWrap()}
+        font-size: ${GlobalStyle["font-size-m"]};
         &:first-child {
           color: ${GlobalStyle["font-color-desc"]};
         }

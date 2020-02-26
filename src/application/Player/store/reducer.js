@@ -77,18 +77,18 @@ const handleInsertSong = (state, song) => {
 
     // 同理 sequencePlayList也要处理
     // 插入到播放列表中的歌曲在顺序列表中的位置
-    let sequenceIndex = findSongIndex(playList[currentIndex], sequenceList) + 1;
+    let sequenceIndex = findSongIndex(playList[currentIndex], sequencePlayList) + 1;
     // 插入的歌曲在顺序列表中的位置
-    const fsIndex = findSongIndex(song, sequenceList);
+    const fsIndex = findSongIndex(song, sequencePlayList);
     // 插入歌曲
     sequencePlayList.splice(currentIndex, 0, song);
     if (fsIndex > -1) {
         // 跟上面类似的逻辑。如果旧的歌曲在前面就删掉，index--; 如果在后面就直接删除
         if (fsIndex < sequenceIndex) {
-            sequenceList.splice(fsIndex, 1);
+            sequencePlayList.splice(fsIndex, 1);
             sequenceIndex--;
         } else {
-            sequenceList.splice(fsIndex + 1, 1);
+            sequencePlayList.splice(fsIndex + 1, 1);
         }
     }
     return state.merge({
