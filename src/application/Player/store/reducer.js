@@ -29,12 +29,12 @@ const defaultState = fromJS({
 const handleDeleteSong = (state, song) => {
     // 下面 也可用 loadsh 库的 deepClone 方法。这里深拷贝是基于纯函数的考虑，不对参数 state 做修改
     // 播放列表
-    const playList = JSON.parse(JSON.stringify(state.getIn(['player', 'playList'])));
+    const playList = JSON.parse(JSON.stringify(state.get('playList') && state.get('playList').toJS() || []));
     // 顺序列表
-    const sequencePlayList = JSON.parse(JSON.stringify(state.getIn(['player', 'sequencePlayList'])));
+    const sequencePlayList = JSON.parse(JSON.stringify(state.get('sequencePlayList') && state.get('sequencePlayList').toJS() || []));
     let currentIndex = state.get('currentIndex');
     // 找对应歌曲在播放列表中的索引
-    const playListIndex = findSongIndex(song, currentIndex);
+    const playListIndex = findSongIndex(song, playList);
     // 在播放列表中将其删除
     playList.splice(playListIndex, 1);
     // 如果删除的歌曲排在当前播放歌曲前面，那么 currentIndex--，让当前的歌正常播放

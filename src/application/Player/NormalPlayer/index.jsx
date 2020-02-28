@@ -44,6 +44,7 @@ function NormalPlayer(props) {
   } = props;
   const normalPlayerRef = useRef();
   const cdWrapperRef = useRef();
+  
   // 切换为迷你播放器
   const handleBack = () => toggleFullScreen(false);
   const [currentState, setCurrentState] = useState(0);
@@ -165,7 +166,7 @@ function NormalPlayer(props) {
       bScroll.scrollToElement(lineElement, 1000);
     } else {
       // 当前歌词行数小于 5 行，就直接滚动到最顶端
-      bScroll.scrollTo(0, 0, 1000);
+      bScroll && bScroll.scrollTo(0, 0, 1000);
     }
   }, [currentLineNum]);
   const isLyric = currentState === "lyric";

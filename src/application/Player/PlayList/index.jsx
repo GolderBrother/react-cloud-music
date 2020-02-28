@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { connect } from "react-redux";
 import { CSSTransition } from "react-transition-group";
 import {
@@ -61,7 +61,7 @@ function PlayList(props) {
     if (listWrapperRef && listWrapperRef.current) {
       // 最开始显示在最下面
       listWrapperRef.current.style[transformPrefix] =
-        "translate3d(0, 100%, 0%)";
+        "translate3d(0, 100%, 0)";
     }
   }, [transformPrefix]);
   const handleEntering = useCallback(() => {
@@ -81,9 +81,14 @@ function PlayList(props) {
   }, [transformPrefix]);
   const handleExit = useCallback(() => {
     // 隐藏列表
+    if (listWrapperRef && listWrapperRef.current) {
+      listWrapperRef.current.style[transformPrefix] = `translate3d(0, ${distance}px, 0)`;
+    }
+  }, [distance, transformPrefix]);
+  const handleExited = useCallback(() => {
     setShow(false);
     if (listWrapperRef && listWrapperRef.current) {
-      listWrapperRef.current.style[transformPrefix] = "translate3d(0, 100%, 0)";
+      listWrapperRef.current.style[transformPrefix] = `translate3d(0, 100%, 0)`;
     }
   }, [transformPrefix]);
   //   用来获取当前播放歌曲的播放图标
@@ -215,10 +220,12 @@ function PlayList(props) {
       onEntering={handleEntering}
       onExiting={handleExiting}
       onExit={handleExit}
+      onExited={handleExited}
     >
       <PlayListWrapper
         ref={playListWrapperRef}
         style={{ display: show ? "block" : "none" }}
+        onClick={() => togglePlayListDispatch(false)}
       >
         {/* fix: 其实这是为了在用户点击列表外部的时候，直接将列表隐藏掉，也符合常理。但是 PlayWrapper 的范围是整个屏幕，包含了列表内容，因此在 list_wrapper 中绑定点击事件，阻止它冒泡就行了。因为这个 div 包裹的就是整个歌曲的列表。 */}
         <div

@@ -95,7 +95,7 @@ export const Top = styled.div`
     .subtitle {
         line-height: 20px;
         font-size: ${GlobalStyle["font-size-m"]};
-        color: ${GlobalStyle["font-color-desc-v2"]};
+        color: ${GlobalStyle["font-color-desc-v3"]};
         ${GlobalStyle.noWrap()};
     }
 `;
@@ -108,6 +108,22 @@ export const Middle = styled.div`
     white-space: nowrap;
     font-size: 0px;
     overflow: hidden;
+    .fade-enter {
+        opacity: 0;
+      }
+    .fade-enter-active {
+        opacity: 1;
+        transition: all 0.4s;
+    }
+    .fade-enter-done {
+        transition: none;
+    }
+    .fade-exit-active {
+        opacity: 0;
+    }
+    .fade-exit-done {
+        opacity: 0;
+    }
 `;
 
 export const CDWrapper = styled.div`
@@ -273,18 +289,18 @@ export const LyricWrapper = styled.div`
 `;
 
 export const SpeedList = styled.div`
-    width: 70%;
+    width: 80%;
     margin: auto;
     display: flex;
     align-items: center;
     height: 30px;
     justify-content: space-around;
     overflow: hidden;
-    >span:first-of-type {s
+    >span:first-of-type {
         display: block;
         flex: 0 0 auto;
         padding: 5px 0;
-        color: ${GlobalStyle["font-color-desc-v2"]};
+        color: ${GlobalStyle["font-color-desc-v4"]};
         font-size: ${GlobalStyle["font-size-m"]};
         vertical-align: middle;
     }
@@ -295,7 +311,7 @@ export const SpeedListItem = styled.div`
     font-size: ${GlobalStyle["font-size-m"]};
     padding: 5px 5px;
     border-radius: 10px;
-    color: ${GlobalStyle["font-color-desc-v2"]};
+    color: ${GlobalStyle["font-color-desc-v4"]};
     &.selected {
         color: ${GlobalStyle["theme-color"]};
         border: 1px solid ${GlobalStyle["theme-color"]};

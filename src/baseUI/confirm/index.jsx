@@ -1,6 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle } from "react";
 import { CSSTransition } from "react-transition-group";
-import { ConfirmWrapper } from "./style";
+import { ConfirmWrapper, ConfirmContainer } from "./style";
 const Confirm = forwardRef((props, ref) => {
   const [show, setShow] = useState(false);
   const { text, confirmBtnText, cancelBtnText } = props;
@@ -18,6 +18,10 @@ const Confirm = forwardRef((props, ref) => {
     hiddenConfirm();
     handleConfirm();
   };
+  const handleClick = e => {
+    console.log('handleClick e', e);
+    e.stopPropagation();
+  }
   return (
     <CSSTransition
       in={show}
@@ -25,8 +29,8 @@ const Confirm = forwardRef((props, ref) => {
       appear={true}
       classNames="confirm-fade"
     >
-      <ConfirmWrapper>
-        <div className="confirm_container">
+      <ConfirmWrapper show={show}>
+        <ConfirmContainer onClick={handleClick}>
           <div className="confirm_content">
             <p className="text">{text}</p>
             <div className="operate">
@@ -41,7 +45,23 @@ const Confirm = forwardRef((props, ref) => {
               </div>
             </div>
           </div>
-        </div>
+        </ConfirmContainer>
+        {/* <div className="confirm_container" style={wrapperStyle} onClick={e => e.stopPropagation()}>
+          <div className="confirm_content">
+            <p className="text">{text}</p>
+            <div className="operate">
+              <div
+                className="operate_btn operate_btn_left"
+                onClick={hiddenConfirm}
+              >
+                {cancelBtnText}
+              </div>
+              <div className="operate_btn" onClick={handleSure}>
+                {confirmBtnText}
+              </div>
+            </div>
+          </div>
+        </div> */}
       </ConfirmWrapper>
     </CSSTransition>
   );

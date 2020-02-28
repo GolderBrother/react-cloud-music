@@ -32,6 +32,8 @@ export default {
     'font-color-light': '#f1f1f1',
     'font-color-desc': '#2E3030',
     'font-color-desc-v2': '#bba8a8', // 略淡
+    'font-color-desc-v3': 'rgba(226, 0, 0, 0.74)', // 深色
+    'font-color-desc-v4': '#b76a6a', // 略深
     'font-size-xs': '10px',
     'font-size-s': '12px',
     'font-size-m': '14px',

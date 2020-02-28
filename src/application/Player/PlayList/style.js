@@ -80,6 +80,12 @@ export const ListContent = styled.div`
         height: 40px;
         padding: 0px 30px 0px 20px;
         overflow: hidden;
+        &.list-enter, &.list-exit-done{
+            height: 0;
+        }
+        &.list-enter-active, &.list-leave-active{
+            transition: all 0.1s;
+        }
         .current {
             width: 20px;
             flex: 0 0 20px;

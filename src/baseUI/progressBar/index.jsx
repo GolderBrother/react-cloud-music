@@ -4,7 +4,7 @@ import { getPrefixStyle } from "../../api/utils";
 function ProgressBar(props) {
   const { percent } = props;
   // 进度条改变后的回调，父组件传入的，子组件需要执行并且传入当前进度值
-  const { percentChange } = props;
+  const { onProgressChange: percentChange } = props;
   const progressBarRef = useRef();
   const progressRef = useRef();
   const progressBtnRef = useRef();
@@ -20,18 +20,17 @@ function ProgressBar(props) {
   // 监听percent改变后更新进度值
   useEffect(() => {
     if(percent >= 0 && percent <= 1 && !touch.isTouching) {
-      const barWidth = progressRef.current.clientWidth - progressBtnWidth;
+      const barWidth = progressBarRef.current.clientWidth - progressBtnWidth;
       const offsetWidth = percent * barWidth;
       handleOffset(offsetWidth);
     }
     // eslint-disable-next-line
   }, [percent]);
-  console.log("percent", percent);
   // 进度值改变后，获取新的进度值，执行父组件传入的回调
   const _changePercent = () => {
     const barWidth = progressBarRef.current.clientWidth - progressBtnWidth;
-    const percent = progressRef.current.clientWidth / barWidth;
-    percentChange && percentChange(percent);
+    const currentPercent = progressRef.current.clientWidth / barWidth;
+    percentChange && percentChange(currentPercent);
   };
   // 滑动开始的回调
   const progressTouchStart = (e) => {
@@ -49,6 +48,7 @@ function ProgressBar(props) {
     const deltaX = e.touches[0].pageX - touch.startX; // 表示滑动距离
     const barWidth = progressBarRef.current.clientWidth - progressBtnWidth;
     const offsetWidth = Math.min(Math.max(0, touch.left + deltaX), barWidth); //表示控制按钮在当前进度条之内，不能滑动出去
+    console.log(`offsetWidth`, offsetWidth);
     handleOffset(offsetWidth);
   }
   const progressTouchEnd = (e) => {
