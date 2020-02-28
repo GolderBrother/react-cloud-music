@@ -1,14 +1,15 @@
-import React, { useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import Scroll from "../scroll/index";
 import { List, ListItem } from "./style";
-
+const noop = function() {};
 // better-scroll 的 (横向) 滚动原理，首先外面容器要宽度固定，其次内容宽度要大于容器宽度。
 function Horizen(props) {
   // 分类栏外部div的dom
   const CategoryRef = useRef(null);
+  const [refreshCategoryScroll, setRefreshCategoryScroll] = useState(false);
   const { list = [], selectedVal = "", title = "" } = props;
-  const { handleClick = () => {} } = props;
+  const { handleClick = noop } = props;
 
   // 初始化内容宽度
   useEffect(() => {
@@ -19,11 +20,15 @@ function Horizen(props) {
     Array.from(tagElements).forEach(tagDOM => {
       totalWidth += Number(tagDOM.offsetWidth);
     });
+    totalWidth += 2;
     categoryDOM.style.width = `${totalWidth}px`;
-  }, []);
-  // TODO 整个列表不能滚动
+    setRefreshCategoryScroll(true);
+  }, [refreshCategoryScroll]);
+  const clickHandler = item => {
+    handleClick(item.key);
+  };
   return (
-    <Scroll direction={"horizental"}>
+    <Scroll direction={"horizental"} refresh={true}>
       <div ref={CategoryRef}>
         <List>
           <span>{title}</span>
@@ -32,7 +37,7 @@ function Horizen(props) {
               key={`${item.key}_${index}`}
               className={selectedVal === item.key ? "selected" : ""}
               onClick={() => {
-                handleClick(item.key);
+                clickHandler(item);
               }}
             >
               {item.name}

@@ -6,10 +6,13 @@ import { Top, Tab, TabItem } from "./style.js";
 import Player from '../Player';
 function Home(props) {
   const { route } = props;
+  const handleClickMore = () => {
+    alert('客官稍等，小二正在赶来的路上...');
+  }
   return (
     <section className="home">
       <Top>
-        <span className="iconfont menu">&#xe65c;</span>
+        <span className="iconfont menu" onClick={handleClickMore}>&#xe65c;</span>
         <span className="title">云音乐</span>
         <span className="iconfont search" onClick={() => props.history.push("/search")}>&#xe62b;</span>
       </Top>

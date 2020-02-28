@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import GlobalStyle from '../../assets/global-style';
 
-export const NavContainer = styled.div `
+export const NavContainer = styled.div`
   box-sizing: border-box;
   position: fixed;
   top: 95px;
@@ -10,11 +10,11 @@ export const NavContainer = styled.div `
   overflow: hidden;
 `;
 
-export const ListContainer = styled.div `
+export const ListContainer = styled.div`
   position: fixed;
   top: 160px;
   left: 0px;
-  bottom: 0px;
+  bottom: ${props => props.showMiniPlay ? "60px" : 0};
   width: 100%;
   overflow: hidden;
 `;
@@ -31,7 +31,7 @@ export const List = styled.div`
   }
 `;
 
-export const ListItem = styled.div `
+export const ListItem = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: row;

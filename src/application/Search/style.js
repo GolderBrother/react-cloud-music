@@ -35,7 +35,7 @@ export const ShortcutWrapper = styled.div`
     top: 40px;
     bottom: 0;
     width: 100%;
-    display: ${props => props.show ? "" : "block"};
+    display: ${props => props.show ? "block" : "none"};
 `;
 
 export const HotKey = styled.div`
@@ -46,7 +46,7 @@ export const HotKey = styled.div`
         font-size: ${GlobalStyle["font-size-m"]};
         color: ${GlobalStyle["font-color-desc-v2"]};
     }
-    item {
+    .item {
         display: inline-block;
         padding: 5px 10px;
         margin: 0 20px 10px 0;

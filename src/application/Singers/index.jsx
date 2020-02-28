@@ -4,30 +4,41 @@ import Horizen from "../../baseUI/horizen-item";
 import Scroll from "../../baseUI/scroll";
 import Loading from "../../baseUI/loading";
 import { categoryTypes, alphaTypes } from "../../api/config";
-import { NavContainer, ListContainer, List, ListItem, EnterLoading } from "./style";
+import {
+  NavContainer,
+  ListContainer,
+  List,
+  ListItem,
+  EnterLoading
+} from "./style";
 import {
   getHotSingerList,
   getSingerListByCate,
   changePageCount,
-  changeEnterLoading,
+  // changeEnterLoading,
   changePullUpLoading,
   refreshMoreHotSingerList,
   refreshMoreSingerListByCate,
-  changePullDownLoading
+  changePullDownLoading,
+  changeCategory,
+  changeAlpha
 } from "./store/actions";
 import { connect } from "react-redux";
 import { renderRoutes } from "react-router-config";
-import { CategoryDataContext, changeCategory, changeAlpha } from "./data";
+// import { CategoryDataContext, changeCategory, changeAlpha } from "./data";
 // 歌手列表组件
 function Singers(props) {
-  const { data, dispatch } = useContext(CategoryDataContext);
-  const { category, alpha } = (data && data.toJS()) || {};
+  // const { data, dispatch } = useContext(CategoryDataContext);
+  // const { category, alpha } = (data && data.toJS()) || {};
   const scrollRef = useRef(null);
   // 分类
   // const [category, setCategory] = useState("");
   // 首字母category
   // const [alpha, setAlpha] = useState("");
   const {
+    category,
+    alpha,
+    songsCount,
     enterLoading = false,
     singerList = [],
     pageCount = 0,
@@ -43,7 +54,7 @@ function Singers(props) {
   } = props;
   const handleUpdateCategory = newVal => {
     if (category === newVal) return;
-    updateAlphaDispatch(newVal);
+    updateCategoryDispatch(newVal);
     scrollRef.current.refresh();
   };
   const handleUpdateAlpha = newVal => {
@@ -61,7 +72,8 @@ function Singers(props) {
 
   const handlePullUp = () => {
     const hot = category === "";
-    pullUpRefreshDispatch(category, alpha, hot, pageCount);
+    // pullUpRefreshDispatch(category, alpha, hot, pageCount);
+    pullUpRefreshDispatch(hot, pageCount);
   };
   const handlePullDown = () => {
     pullDownRefreshDispatch(category, alpha);
@@ -112,8 +124,8 @@ function Singers(props) {
         <Horizen
           list={categoryTypes}
           title={"分类 (默认热门):"}
-          handleClick={handleUpdateCategory}
           selectedVal={category}
+          handleClick={handleUpdateCategory}
         />
         <Horizen
           list={alphaTypes}
@@ -122,7 +134,7 @@ function Singers(props) {
           handleClick={handleUpdateAlpha}
         ></Horizen>
       </NavContainer>
-      <ListContainer>
+      <ListContainer showMiniPlay={Boolean(songsCount)}>
         <Scroll
           ref={scrollRef}
           onScroll={forceCheck}
@@ -134,7 +146,6 @@ function Singers(props) {
           {renderSingerList()}
         </Scroll>
       </ListContainer>
-      {/* <Loading show={enterLoading} /> */}
       {/* 入场加载动画 */}
       {enterLoading ? (
         <EnterLoading>
@@ -149,33 +160,39 @@ function Singers(props) {
 const mapStateToProps = state => ({
   // 不要在这里将数据 toJS, 因为每次 toJS 都产生不一样的引用
   // 不然每次 diff 比对 props 的时候都是不一样的引用，还是导致不必要的重渲染，属于滥用 immutable
+  alpha: state.getIn(["singers", "alpha"]),
+  category: state.getIn(["singers", "category"]),
   singerList: state.getIn(["singers", "singerList"]),
   enterLoading: state.getIn(["singers", "enterLoading"]),
   pullUpLoading: state.getIn(["singers", "pullUpLoading"]),
   pullDownLoading: state.getIn(["singers", "pullDownLoading"]),
-  pageCount: state.getIn(["singers", "pageCount"])
+  pageCount: state.getIn(["singers", "pageCount"]),
+  songsCount: state.getIn(['player', 'playList']).size
 });
 const mapDispatchToProps = dispatch => ({
   getHotSingerListDispatch() {
     dispatch(getHotSingerList());
   },
-  updateCategoryDispatch(category, alpha) {
-    dispatch(changePageCount(0)); //由于改变了分类，所以pageCount清零
-    dispatch(changeEnterLoading(true)); // 显示loading等待
-    dispatch(getSingerListByCate(category, alpha)); //第一次加载对应类别的歌手
+  updateCategoryDispatch(category) {
+    // dispatch(changePageCount(0)); //由于改变了分类，所以pageCount清零
+    // dispatch(changeEnterLoading(true)); // 显示loading等待
+    // dispatch(getSingerListByCate(category, alpha)); //第一次加载对应类别的歌手
+
+    dispatch(changeCategory(category));
+    dispatch(getSingerListByCate());
   },
   updateAlphaDispatch(newVal) {
     dispatch(changeAlpha(newVal));
     dispatch(getSingerListByCate());
   },
-  // 上拉加载更多数据(category, alpha, hot, count)
-  pullUpRefreshDispatch(category, alpha, hot, count) {
+  // 上拉加载更多数据(hot, count)
+  pullUpRefreshDispatch(hot, count) {
     dispatch(changePullUpLoading(true));
-    dispatch(changePageCount(count++));
+    // dispatch(changePageCount(count++));
     if (hot) {
       dispatch(refreshMoreHotSingerList());
     } else {
-      dispatch(refreshMoreSingerListByCate(category, alpha));
+      dispatch(refreshMoreSingerListByCate());
     }
   },
   // 顶部下拉刷新
@@ -185,7 +202,7 @@ const mapDispatchToProps = dispatch => ({
     if (category === "" && alpha === "") {
       dispatch(getHotSingerList());
     } else {
-      dispatch(getSingerListByCate(category, alpha));
+      dispatch(getSingerListByCate());
     }
   }
 });

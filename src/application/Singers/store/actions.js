@@ -40,17 +40,32 @@ export const changeEnterLoading = data => ({
     data
 });
 
+export const changeListOffset = data => ({
+    type: actionTypes.CHANGE_LIST_OFFSET,
+    data
+})
+
+export const changeCategory = (data) => ({
+    type: actionTypes.CHANGE_CATEGORY,
+    data
+});
+
+export const changeAlpha = (data) => ({
+    type: actionTypes.CHANGE_ALPHA,
+    data
+});
+
 // 首次加载热门歌手数据(下拉刷新)
 export const getHotSingerList = () => {
     return async (dispatch, getState) => {
         try {
-            const res = await getHotSingerListRequest(0);
             const {
                 artists
-            } = res;
+            } = await getHotSingerListRequest(0);
             dispatch(changeSingerList(artists));
             dispatch(changeEnterLoading(false));
             dispatch(changePullDownLoading(false));
+            dispatch(changeListOffset(artists.length));
         } catch (error) {
             console.log('获取热门歌手数据失败:', error);
         }
@@ -60,44 +75,8 @@ export const getHotSingerList = () => {
 export const refreshMoreHotSingerList = () => {
     return async (dispatch, getState) => {
         try {
-            const pageCount = getState().getIn(['singers', 'pageCount']);
-            const res = await getHotSingerListRequest(pageCount);
-            const {
-                artists = []
-            } = res;
-            const oldSingerList = getState().getIn(['singers', 'singerList']).toJS();;
-            const newList = [...oldSingerList, ...artists];
-            dispatch(changeSingerList(newList));
-            dispatch(changePullUpLoading(false))
-        } catch (error) {
-            console.log('获取热门歌手数据失败:', error);
-        }
-    }
-}
-
-// 第一次加载对应类别的歌手(下拉刷新)
-export const getSingerListByCate = (category = '', alpha = '') => {
-    return async (dispatch, getState) => {
-        try {
-            const res = await getSingerCategoryRequest(category, alpha, 0);
-            const {
-                artists = []
-            } = res;
-            dispatch(changeSingerList(artists));
-            dispatch(changeEnterLoading(false));
-            dispatch(changePullDownLoading(false));
-        } catch (error) {
-            console.log('获取对应类别的歌手数据失败:', error);
-        }
-    }
-}
-
-// 对应类别的歌手数据(上拉加载更多)
-export const refreshMoreSingerListByCate = (category = '', alpha = '') => {
-    return async (dispatch, getState) => {
-        try {
-            const pageCount = getState().getIn(['singers', 'pageCount']);
-            const res = await getSingerCategoryRequest(category, alpha, pageCount);
+            const offset = getState().getIn(['singers', 'listOffset']);
+            const res = await getHotSingerListRequest(offset);
             const {
                 artists = []
             } = res;
@@ -105,6 +84,49 @@ export const refreshMoreSingerListByCate = (category = '', alpha = '') => {
             const newList = [...oldSingerList, ...artists];
             dispatch(changeSingerList(newList));
             dispatch(changePullUpLoading(false));
+            dispatch(changeListOffset(newList.length));
+        } catch (error) {
+            console.log('获取热门歌手数据失败:', error);
+        }
+    }
+}
+// 第一次加载对应类别的歌手(下拉刷新)
+export const getSingerListByCate = (_category = '', _alpha = '') => {
+    return async (dispatch, getState) => {
+        try {
+            const category = _category || getState().getIn(['singers', 'category']);
+            const alpha = _alpha || getState().getIn(['singers', 'alpha']);
+            const offset = getState().getIn(['singers', 'listOffset']) || 0;
+            const res = await getSingerCategoryRequest(category, alpha, offset);
+            const {
+                artists = []
+            } = res;
+            dispatch(changeSingerList(artists));
+            dispatch(changeEnterLoading(false));
+            dispatch(changePullDownLoading(false));
+            dispatch(changeListOffset(artists.length));
+        } catch (error) {
+            console.log('获取对应类别的歌手数据失败:', error);
+        }
+    }
+}
+
+// 对应类别的歌手数据(上拉加载更多)
+export const refreshMoreSingerListByCate = (_category = '', _alpha = '') => {
+    return async (dispatch, getState) => {
+        try {
+            const category = _category || getState().getIn(['singers', 'category']);
+            const alpha = _alpha || getState().getIn(['singers', 'alpha']);
+            const offset = getState().getIn(['singers', 'listOffset']) || 0;
+            const res = await getSingerCategoryRequest(category, alpha, offset);
+            const {
+                artists = []
+            } = res;
+            const oldSingerList = getState().getIn(['singers', 'singerList']).toJS();;
+            const newList = [...oldSingerList, ...artists];
+            dispatch(changeSingerList(newList));
+            dispatch(changePullUpLoading(false));
+            dispatch(changeListOffset(newList.length));
         } catch (error) {
             console.log('获取对应类别的歌手歌手数据失败:', error);
         }

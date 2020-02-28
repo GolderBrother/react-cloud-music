@@ -38,7 +38,6 @@ function Singer(props) {
     enterLoading,
     songsCount
   } = props;
-  console.log("enterLoading", enterLoading);
   const artist = (immutableArtist && immutableArtist.toJS()) || {};
   const songs = (immutableSongsOfArtist && immutableSongsOfArtist.toJS()) || [];
   const setShowStatusFalse = useCallback(() => {

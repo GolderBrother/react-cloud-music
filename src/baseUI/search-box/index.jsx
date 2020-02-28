@@ -28,8 +28,15 @@ function SearchBox(props){
     }, [query]);
     // 父组件点击了热门搜索的关键字，newQuery 更新,这边如果点击的新关键词已经在搜索框中了,就不重复设置
     useEffect(() => {
-        if(newQuery !== query) setQuery(query);
+        let currentQuery = query;
+        if(newQuery !== query) {
+            currentQuery = newQuery;
+            queryRef.current.value = currentQuery;
+        }
+        setQuery(currentQuery);
+        // eslint-disable-next-line
     }, [newQuery]);
+
     // 清空搜索词
     const handleClear = () => {
         setQuery('');
@@ -42,9 +49,9 @@ function SearchBox(props){
     const deleteStyle = {display: query ? "block" : "none"};
     return (
         <SearchBoxWrapper>
-            <i className="iconfont icon-back" onClick={handleBack}></i>
-            <input ref={queryRef} type="text" placeholder="搜索歌曲、歌手、专辑" value={query} onChange={handleChange} />
-            <i className="iconfont icon-delete" style={deleteStyle} onClick={handleClear}></i>
+            <i className="iconfont icon-back" onClick={handleBack}>&#xe655;</i>
+            <input className="box" ref={queryRef} type="text" placeholder="搜索歌曲、歌手、专辑" value={query} onChange={handleChange} />
+            <i className="iconfont icon-delete" style={deleteStyle} onClick={handleClear}>&#xe600;</i>
             {props.children}
         </SearchBoxWrapper>
     )

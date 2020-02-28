@@ -1,6 +1,5 @@
 import React, { createContext, useReducer } from "react";
 import { fromJS } from "immutable";
-
 // context
 export const CategoryDataContext = createContext({});
 
@@ -10,11 +9,20 @@ export const CHANGE_ALPHA = "singers/CHANGE_ALPHA";
 
 // reducer
 const reducer = (state, action) => {
+  const data = action.data;
   switch (action.type) {
     case CHANGE_CATEGORY:
-      return state.set("category", action.data);
+      return state.merge({
+        'category': data,
+        listOffset: 0,
+        enterLoading: true
+      });;
     case CHANGE_ALPHA:
-      return state.set("alpha", action.data);
+      return state.merge({
+        'alpha': data,
+        listOffset: 0,
+        enterLoading: true
+      });
     default:
       return state;
   }

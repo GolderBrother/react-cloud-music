@@ -19,7 +19,6 @@ const Confirm = forwardRef((props, ref) => {
     handleConfirm();
   };
   const handleClick = e => {
-    console.log('handleClick e', e);
     e.stopPropagation();
   }
   return (

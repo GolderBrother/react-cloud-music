@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { SongWrapper, SongListWrapper } from "./style";
 import { getName, getCount } from "../../api/utils";
-import { ONE_PAGE_COUNT } from '../../api/config';
+import { ONE_PAGE_COUNT } from "../../api/config";
 import { connect } from "react-redux";
 import {
   changePlayList,
@@ -31,11 +31,9 @@ const SongList = React.forwardRef((props, ref) => {
     setStartIndex(startIndex + ONE_PAGE_COUNT);
   }, [loading, startIndex, totalCount]);
   const selectItem = (e, index) => {
-    console.log('selectItem', e, index);
     changePlayListDispatch(songs);
     changeSequencePlayListDispatch(songs);
     changeCurrentIndexDispatch(index);
-    console.log('e.nativeEvent.clientX, e.nativeEvent.clientY', e.nativeEvent.clientX, e.nativeEvent.clientY);
     musicAnimation(e.nativeEvent.clientX, e.nativeEvent.clientY);
   };
   const renderSongList = (list = []) => {
@@ -60,13 +58,25 @@ const SongList = React.forwardRef((props, ref) => {
     }
     return res;
   };
-  const renderCollect = count => (
-    <div className="add_list">
-      <i className="iconfont">&#xe62d;</i>
-      {/* <span>收藏({getCount(currentAlbum.subscribedCount)})</span> */}
-      <span>收藏({getCount(count)})</span>
-    </div>
-  );
+  const renderCollect = count => {
+    const handleCollect = e => {
+      console.log('客官稍等，小二正在赶来的路上')
+      alert("客官稍等，小二正在赶来的路上...");
+    };
+    return (
+      <div className="add_list" onClick={handleCollect}>
+        <i className="iconfont">&#xe62d;</i>
+        {/* <span>收藏({getCount(currentAlbum.subscribedCount)})</span> */}
+        <span>收藏({getCount(count)})</span>
+      </div>
+    );
+  };
+  // 播放全部
+  const handlePlayAll = e => {
+    e.stopPropagation();
+    // 从第一首歌曲开始播放
+    selectItem(e, 0);
+  };
   useEffect(() => {
     changeCurrentIndexDispatch(0);
   }, []);
@@ -76,7 +86,7 @@ const SongList = React.forwardRef((props, ref) => {
       <div className="first_line">
         <div className="play_all">
           <i className="iconfont">&#xe6e3;</i>
-          <span>
+          <span onClick={handlePlayAll}>
             播放全部
             <span className="sum">(共{totalCount}首)</span>
           </span>

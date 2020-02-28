@@ -42,13 +42,10 @@ function ProgressBar(props) {
   }
   // 滑动过程中
   const progressTouchMove = (e) => {
-    console.log('progressTouchMove', e);
-    console.log('touch.isTouching', touch.isTouching);
     if(!touch.isTouching) return;
     const deltaX = e.touches[0].pageX - touch.startX; // 表示滑动距离
     const barWidth = progressBarRef.current.clientWidth - progressBtnWidth;
     const offsetWidth = Math.min(Math.max(0, touch.left + deltaX), barWidth); //表示控制按钮在当前进度条之内，不能滑动出去
-    console.log(`offsetWidth`, offsetWidth);
     handleOffset(offsetWidth);
   }
   const progressTouchEnd = (e) => {

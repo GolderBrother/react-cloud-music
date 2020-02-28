@@ -10,7 +10,6 @@ import Loading from "../../baseUI/loading";
 // 排行榜组件
 function Rank(props) {
   // 属性和方法分开写
-  console.log("props", props);
   const { rankList: list, loading, songsCount } = props;
   const { getRankListDispatch } = props;
   const rankList = list ? list.toJS() : [];

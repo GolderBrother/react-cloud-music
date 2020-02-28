@@ -29,20 +29,21 @@ const Scroll = forwardRef((props, ref) => {
     bounceDown
   } = props;
   const { onScroll, pullUp, pullDown } = props;
-  const pullUpDebounce = useMemo(() => {
-    return debounce(pullUp, 300);
-  }, [pullUp]);
   // 千万注意，这里不能省略依赖，
   // 不然拿到的始终是第一次 pullUp 函数的引用，相应的闭包作用域变量都是第一次的，产生闭包陷阱。下同。
   // 加了依赖后,每次更新才是新的引用,否则一直没变化
   // 这样当我们频繁上拉下拉的时候就不会频繁触发回调了
+  const pullUpDebounce = useMemo(() => {
+    return debounce(pullUp, 300);
+  }, [pullUp]);
   const pullDownDebounce = useMemo(() => {
     return debounce(pullDown, 300);
   }, [pullDown]);
+  
   useEffect(() => {
     // 初始化BetterScroll
     const bScroll = new BetterScroll(scrollContaninerRef.current, {
-      scrollX: direction === "horizontal",
+      scrollX: direction === "horizental",
       scrollY: direction === "vertical",
       probeType: 3,
       click,
@@ -57,12 +58,7 @@ const Scroll = forwardRef((props, ref) => {
     };
     //eslint-disable-next-line
   }, []);
-  // 每次重新渲染都要刷新实例，防止无法滑动
-  useEffect(() => {
-    if (refresh && bScroll) {
-      bScroll.refresh && bScroll.refresh();
-    }
-  });
+
   // 给实例绑定 scroll 事件
   useEffect(() => {
     if (!bScroll || !onScroll) return;
@@ -70,39 +66,51 @@ const Scroll = forwardRef((props, ref) => {
       onScroll(scroll);
     });
     return () => {
-      bScroll.off("scroll");
+      bScroll.off("scroll", onScroll);
     };
   }, [bScroll, onScroll]);
+
   // 进行上拉到底的判断，调用上拉刷新的函数
   useEffect(() => {
     if (!bScroll || !pullUp) return;
     // 监听滑动到底部事件(上拉加载)
-    bScroll.on("scrollEnd", () => {
+    const handlePullUp = () => {
       // 判断是否滑动到了底部
       if (bScroll.y <= bScroll.maxScrollY + 100) {
         pullUpDebounce();
       }
-    });
+    }
+    bScroll.on("scrollEnd", handlePullUp);
     return () => {
       // 组件销毁后移除监听
       bScroll.off("scrollEnd");
     };
-  }, [bScroll, pullUp]);
+  }, [bScroll, pullUp, pullUpDebounce]);
+
   // 进行下拉的判断，调用下拉刷新的函数
   useEffect(() => {
     if (!bScroll || !pullDown) return;
     // 监听下拉事件(下拉刷新)
-    bScroll.on("touchEnd", () => {
+    const handlePullDown = () => {
       // 判断是否下拉了一段距离
       if (bScroll.y > 50) {
         pullDownDebounce();
       }
-    });
+    };
+    bScroll.on("touchEnd", handlePullDown);
     return () => {
       // 组件销毁后移除监听
       bScroll.off("touchEnd");
     };
-  }, [bScroll, pullDown]);
+  }, [bScroll, pullDown, pullDownDebounce]);
+
+  // 每次重新渲染都要刷新实例，防止无法滑动
+  useEffect(() => {
+    if (refresh && bScroll) {
+      bScroll.refresh && bScroll.refresh();
+    }
+  });
+
   // 为了给上级组件暴露DOM和方法,因为函数式组件天生不具备被上层组件直接调用 ref 的条件
   // 一般和 forwardRef 一起使用，ref 已经在 forWardRef 中默认传入
   useImperativeHandle(ref, () => ({

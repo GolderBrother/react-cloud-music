@@ -21,7 +21,7 @@ function Player(props) {
   // 用来记录歌曲时长
   const [duration, setDuration] = useState(0);
   // 即时歌词
-  const [currentPlayingLyric, setPlayingLyric] = useState("");
+  const [currentPlayingLyric, setCurrentPlayingLyric] = useState("");
   // 当前播放模式提示文本
   const [modeText, setModeText] = useState("");
 
@@ -82,7 +82,7 @@ function Player(props) {
     // 赋值 currentSong
     changeCurrentDispatch(current);
     setPreSong(current);
-    setPlayingLyric("");
+    setCurrentPlayingLyric("");
     audioRef.current.src = getSongUrl(current.id);
     audioRef.current.autoplay = true;
     audioRef.current.playbackRate = speed;
@@ -102,16 +102,16 @@ function Player(props) {
     if (currentLyric.current && currentLyric.current.lines.length) {
       handleLyric({
         lineNum: currentLineNum.current,
-        txt: currentLyric.current.lines[currentLineNum.current].txt
+        text: currentLyric.current.lines[currentLineNum.current].text
       });
     }
   }, [fullScreen]);
 
   // 歌词解析完后的回调
-  const handleLyric = ({ lineNum, txt }) => {
+  const handleLyric = ({ lineNum, text }) => {
     if (!currentLyric.current) return;
     currentLineNum.current = lineNum;
-    setPlayingLyric(txt);
+    setCurrentPlayingLyric(text);
   };
 
   // 获取歌词数据

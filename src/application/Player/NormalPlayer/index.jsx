@@ -150,7 +150,6 @@ function NormalPlayer(props) {
   const toggleCurrentState = () => {
     let nextState = "";
     nextState = currentState === "lyric" ? "" : "lyric";
-    console.log('nextState', nextState);
     setCurrentState(nextState);
   };
   // 监听 currentLineNum 变量，当它改变时，来进行一些歌词滚动操作。
@@ -212,6 +211,7 @@ function NormalPlayer(props) {
                   alt=""
                 />
               </div>
+              {/* TODO 这边歌词可以根据加个播放到每个字的进度 */}
               <p className="playing_lyric">{currentPlayingLyric}</p>
             </CDWrapper>
           </CSSTransition>

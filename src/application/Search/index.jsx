@@ -38,10 +38,14 @@ function Search(props) {
     // 渲染热门关键词模块
     const renderHotKey = () => {
         const hotList = immutableHotList ? immutableHotList.toJS() : [];
+        const handleClickItem = (e, item) => {
+            e.stopPropagation();
+            setQuery(item.first) 
+        }
         return (
             <ul>{
                 hotList.map((item) => (
-                    <li className="item" key={item.first} onClick={() => setQuery(item.first)}>{item.first}</li>
+                    <li className="item" key={item.first} onClick={(e) => handleClickItem(e, item)}>{item.first}</li>
                 ))
             }</ul>
         );
@@ -123,23 +127,22 @@ function Search(props) {
     // 由于是传递给子组件的方法,所以尽量用useCallback,这样能保证在以来没变的情况下,始终子组件传的是相同的引用
     const handleBack = useCallback(() => {
         setShow(false);
+        handleExited();
     }, []);
     // 查询回调，根据关键词获取搜索建议结果
-    const handleQuery = (query) => {
+    const handleQuery = async (query) => {
         setQuery(query);
         if (!query) return;
         changeEnterLoadingDispatch(true);
-        getSuggestListDispatch(query);
+        await getSuggestListDispatch(query);
+        changeEnterLoadingDispatch(false);
     };
-    // const handleQuery = useCallback((query) => {
-    //     setQuery(query);
-    // }, [query]);
     // 初次渲染，发送请求获取热门搜索关键词
     useEffect(() => {
         setShow(true);
         // 只有不存在才获取，存在直接用缓存的，不在重新获取
         const hotList = immutableHotList ? immutableHotList.toJS() : [];
-        if (!hotList.size) getHotKeyWordsDispatch();
+        if (!hotList.length) getHotKeyWordsDispatch();
     });
     return (
         <CSSTransition
