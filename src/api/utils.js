@@ -60,7 +60,7 @@ export const getName = (list = []) => {
  * 判断是否为空对象
  * @param {*} obj 对象
  */
-export const isPlainObject = obj => !obj || Object.keys(obj).length === 0;
+export const isEmptyObject = obj => !obj || Object.keys(obj).length === 0;
 
 /**
  * 获取样式的浏览器厂商前缀

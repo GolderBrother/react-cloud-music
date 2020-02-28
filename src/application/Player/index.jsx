@@ -1,107 +1,102 @@
-import React, { useState, useRef, useEffect } from "react";
-import * as actions from "./store/actions";
+import React, { useRef, useState, useEffect } from "react";
 import { connect } from "react-redux";
+import * as actions from "./store/actions";
+import {
+  isEmptyObject,
+  shuffle,
+  findSongIndex,
+  getSongUrl
+} from "../../api/utils";
+import PlayList from "./PlayList";
+import Toast from "../../baseUI/Toast";
+import Lyric from "../../api/lyric-parser";
 import MiniPlayer from "./MiniPlayer";
 import NormalPlayer from "./NormalPlayer";
-import Toast from "../../baseUI/Toast";
-import {
-  getSongUrl,
-  isPlainObject,
-  findSongIndex,
-  shuffle
-} from "../../api/utils";
-import { playMode } from "../../api/config";
-import { getLyricRequest } from "../../api/request";
-import Lyric from "./../../api/lyric-parser";
-import PlayList from "./PlayList";
+import { playMode as _playMode } from "../../api/config";
+import { getLyricRequest } from "./../../api/request";
+
 function Player(props) {
-  console.log("Player props", props);
   // 用来记录目前播放时间
   const [currentTime, setCurrentTime] = useState(0);
   // 用来记录歌曲时长
   const [duration, setDuration] = useState(0);
-  // 记录当前的歌曲，以便于下次重渲染时比对是否是一首歌
-  const [prevSong, setPrevSong] = useState({});
+  // 即时歌词
+  const [currentPlayingLyric, setPlayingLyric] = useState("");
   // 当前播放模式提示文本
   const [modeText, setModeText] = useState("");
-  // 即时歌词
-  const [currentPlayingLyric, setCurrentPlayingLyric] = useState("");
-  const audioRef = useRef();
-  const toastRef = useRef();
-  const songReady = useRef(true);
-  // 歌词播放记录
-  const currentLyric = useRef({});
-  // 用来记录当前行数的
-  const currentLineNum = useRef(0);
-  const percent = isNaN(currentTime / duration) ? 0 : currentTime / duration;
-  console.log("percent", percent);
+
+  let percent = isNaN(currentTime / duration) ? 0 : currentTime / duration;
+
   const {
-    playMode: mode, // 播放模式
-    playList: immutablePlayList,
+    speed,
     playingState,
-    fullScreen,
     currentSong: immutableCurrentSong,
     currentIndex,
+    playList: immutablePlayList,
+    playMode,
     sequencePlayList: immutableSequencePlayList,
-    speed
+    fullScreen
   } = props;
+
   const {
-    toggleFullScreenDispatch,
-    togglePlayingStateDispatch,
-    changeCurrentIndexDispatch,
-    changeCurrentSongDispatch,
+    togglePlayingDispatch,
     togglePlayListDispatch,
-    togglePlayModeDispatch, // 切换播放模式 分三种: 单曲循环、顺序循环和随机播放
+    changeCurrentIndexDispatch,
+    changeCurrentDispatch,
+    changePlayListDispatch,
     changeModeDispatch,
+    toggleFullScreenDispatch,
     changeSpeedDispatch
   } = props;
-  const currentSong = immutableCurrentSong ? immutableCurrentSong.toJS() : {};
-  console.log("currentSong", currentSong);
-  const playList = immutablePlayList ? immutablePlayList.toJS() : [];
-  const sequencePlayList = immutableSequencePlayList
-    ? immutableSequencePlayList.toJS()
-    : [];
+
+  const playList = immutablePlayList.toJS();
+  const sequencePlayList = immutableSequencePlayList.toJS();
+  const currentSong = immutableCurrentSong.toJS();
+
+  // 记录当前的歌曲，以便于下次重渲染时比对是否是一首歌
+  const [preSong, setPreSong] = useState({});
+
+  const audioRef = useRef();
+  const toastRef = useRef();
+
+  // 歌词播放记录
+  const currentLyric = useRef();
+  // 用来记录当前行数的
+  const currentLineNum = useRef(0);
+  const songReady = useRef(true);
+
   // 播放歌曲
   useEffect(() => {
     // 以下几种情况就不播放
-    console.log("playList", playList);
-    console.log("currentIndex", currentIndex);
     if (
       !playList.length ||
       currentIndex === -1 ||
       !playList[currentIndex] ||
-      playList[currentIndex].id === prevSong.id ||
-      !songReady.current // 标志位为 false, 就不能切割
+      playList[currentIndex].id === preSong.id ||
+      !songReady.current
     )
       return;
     // 把标志位置为 false, 表示现在新的资源没有缓冲完成，不能切歌
     songReady.current = false;
-    const current = playList[currentIndex];
-    console.log("current", current);
-    changeCurrentSongDispatch(current); // 赋值 currentSong
-    setPrevSong(current);
-    setCurrentPlayingLyric("");
-    if (audioRef && audioRef.current) {
-      audioRef.current.src = getSongUrl(current.id);
-      audioRef.current.autoplay = true;
-      // 这里加上对播放速度的控制
-      audioRef.current.playbackRate = speed;
-      /* setTimeout(() => {
-        // 注意，play 方法返回的是一个 promise 对象
-        audioRef.current.play().then(() => {
-          songReady.current = true; // 缓冲完了，标记为置为true，才表示可以切歌
-        });
-      }); */
-    }
-    togglePlayingStateDispatch(true); //  设置播放状态
+    let current = playList[currentIndex];
+    // 赋值 currentSong
+    changeCurrentDispatch(current);
+    setPreSong(current);
+    setPlayingLyric("");
+    audioRef.current.src = getSongUrl(current.id);
+    audioRef.current.autoplay = true;
+    audioRef.current.playbackRate = speed;
+    togglePlayingDispatch(true); //  设置播放状态
     getLyric(current.id);
     setCurrentTime(0); // 从头开始播放
-    setDuration((current / 1000) | 0); // 设置歌曲时长 按位或 求整
+    setDuration((current.dt / 1000) | 0); // 设置歌曲时长 按位或 求整
+    // eslint-disable-next-line
   }, [currentIndex, playList]);
   // 监听播放状态来控制音频
   useEffect(() => {
     playingState ? audioRef.current.play() : audioRef.current.pause();
   }, [playingState]);
+
   useEffect(() => {
     if (!fullScreen) return;
     if (currentLyric.current && currentLyric.current.lines.length) {
@@ -111,80 +106,99 @@ function Player(props) {
       });
     }
   }, [fullScreen]);
+
   // 歌词解析完后的回调
-  const handleLyric = ({ text, lineNum }) => {
-    if (!currentLineNum.current) return;
+  const handleLyric = ({ lineNum, txt }) => {
+    if (!currentLyric.current) return;
     currentLineNum.current = lineNum;
-    setCurrentPlayingLyric(text);
+    setPlayingLyric(txt);
   };
+
   // 获取歌词数据
-  const getLyric = async id => {
-    try {
-      // 歌词
-      let lyric = "";
-      if (currentLyric.current) currentLyric.current.stop();
-      // 避免songReady恒为false的情况
-      setTimeout(() => {
-        songReady.current = true;
-      }, 3000);
-      const data = await getLyricRequest(id);
-      if (!data || !data.lrc) return;
-      lyric = data.lrc.lyric;
-      if (!lyric) {
-        currentLyric.current = null;
-        return;
-      }
-      currentLyric.current = new Lyric(lyric, handleLyric, speed);
-      currentLyric.current.play();
-      // 从第一行歌词开始
-      currentLineNum.current = 0;
-      // 切换到头开始播放
-      currentLyric.current.seek(0);
-    } catch (error) {
-      // 出错了之后不影响接下来歌曲的播放
-      currentLyric.current = "";
-      songReady.current = true;
-      audioRef.current.play();
+  const getLyric = id => {
+    // 歌词
+    let lyric = "";
+    if (currentLyric.current) {
+      currentLyric.current.stop();
     }
+    // 避免songReady恒为false的情况
+    setTimeout(() => {
+      songReady.current = true;
+    }, 3000);
+    getLyricRequest(id)
+      .then(data => {
+        lyric = data.lrc && data.lrc.lyric;
+        if (!lyric) {
+          currentLyric.current = null;
+          return;
+        }
+        currentLyric.current = new Lyric(lyric, handleLyric, speed);
+        currentLyric.current.play();
+        // 从第一行歌词开始
+        currentLineNum.current = 0;
+        // 切换到头开始播放
+        currentLyric.current.seek(0);
+      })
+      .catch(() => {
+        // 出错了之后不影响接下来歌曲的播放
+        currentLyric.current = "";
+        songReady.current = true;
+        audioRef.current.play();
+      });
   };
-  // 倍速播放功能
-  const clickSpeed = newSpeed => {
-    newSpeed = Number(newSpeed || 1);
-    changeSpeedDispatch(newSpeed);
-    // playbackRate 为歌词播放的速度，可修改
-    audioRef.current.playbackRate = newSpeed;
-    // 并且需要同步歌词
-    currentLyric.current.changeSpeed(newSpeed);
-    currentLyric.current.seek(newSpeed * 1000);
-  };
+
   const clickPlaying = (e, state) => {
     e.stopPropagation();
-    togglePlayingStateDispatch(state);
+    togglePlayingDispatch(state);
     if (currentLyric.current) {
       currentLyric.current.togglePlay(currentTime * 1000);
     }
   };
+
+  /**
+   * 进度条被滑动或点击时用来改变percent的回调函数
+   * @param {*} curPercent 进度条当前进度
+   */
+  const onProgressChange = curPercent => {
+    const newTime = curPercent * duration;
+    setCurrentTime(newTime);
+    audioRef.current.currentTime = newTime;
+    if (!playingState) {
+      togglePlayingDispatch(true);
+    }
+    if (currentLyric.current) {
+      currentLyric.current.seek(newTime * 1000);
+    }
+  };
+
+  // 更新当前播放时间
+  const updateTime = e => {
+    setCurrentTime(e.target.currentTime);
+  };
+
   // 循环播放
   const handleLoop = () => {
     audioRef.current.currentTime = 0;
-    togglePlayingStateDispatch(true);
+    togglePlayingDispatch(true);
     audioRef.current.play();
     if (currentLyric.current) {
       currentLyric.current.seek(0);
     }
   };
+
   // 切换到上一首
+  // 如果播放列表只有一首歌时单曲循环
   const handlePrev = () => {
-    // 如果播放列表只有一首歌时单曲循环
     if (playList.length === 1) {
       handleLoop();
       return;
     }
-    let prevIndex = currentIndex - 1;
-    if (prevIndex < 0) prevIndex = playList.length - 1;
-    if (!playingState) togglePlayingStateDispatch(true);
-    changeCurrentIndexDispatch(prevIndex);
+    let index = currentIndex - 1;
+    if (index === 0) index = playList.length - 1;
+    if (!playingState) togglePlayingDispatch(true);
+    changeCurrentIndexDispatch(index);
   };
+
   // 切换到下一首
   const handleNext = () => {
     // 如果播放列表只有一首歌时单曲循环
@@ -192,116 +206,106 @@ function Player(props) {
       handleLoop();
       return;
     }
-    let nextIndex = currentIndex + 1;
-    if (nextIndex === playList.length) nextIndex = 0;
-    if (!playingState) togglePlayingStateDispatch(true);
-    changeCurrentIndexDispatch(nextIndex);
+    let index = currentIndex + 1;
+    if (index === playList.length) index = 0;
+    if (!playingState) togglePlayingDispatch(true);
+    changeCurrentIndexDispatch(index);
   };
-  // 处理歌曲播放完毕事件
+
   const handleEnd = () => {
-    if (mode === playMode.loop) {
+    if (playMode === _playMode.loop) {
       handleLoop(); // 循环播放
     } else {
       handleNext(); // 切换到下一首
     }
   };
-  // 更新当前播放时间
-  const updateTime = e => {
-    setCurrentTime(e.target.currentTime);
-  };
-  /**
-   * 进度条被滑动或点击时用来改变percent的回调函数
-   * @param {*} curPercent 进度条当前进度
-   */
-  const onProgressChange = curPercent => {
-    const newTime = Number(curPercent * duration);
-    setCurrentTime(newTime);
-    // 更新音频空间的播放进度
-    audioRef.current.currentTime = newTime;
-    // 如果当前是暂停状态，进度条改变后就继续播放
-    if (!playingState) togglePlayingStateDispatch(true);
-    if (currentLyric.current) {
-      currentLyric.current.seek(newTime * 1000);
-    }
-  };
+
   // 切换播放模式
   const changeMode = () => {
-    let newMode = (mode + 1) % 3; //计算下一个模式索引
-    let index;
-    switch (newMode) {
-      case 0: //顺序循环
-        togglePlayListDispatch(sequencePlayList);
-        index = findSongIndex(currentSong, sequencePlayList);
-        changeCurrentIndexDispatch(index);
-        setModeText("顺序循环");
-        break;
-      case 1: //单曲循环
-        togglePlayListDispatch(sequencePlayList);
-        setModeText("单曲循环");
-        break;
-      case 2: //随机循环
-        const newList = shuffle(sequencePlayList);
-        index = findSongIndex(currentSong, newList);
-        togglePlayListDispatch(newList);
-        changeCurrentIndexDispatch(index);
-        setModeText("随机循环");
-        break;
-      default:
-        break;
+    //计算下一个模式索引
+    let newMode = (playMode + 1) % 3;
+    if (newMode === 0) {
+      //顺序模式
+      changePlayListDispatch(sequencePlayList);
+      let index = findSongIndex(currentSong, sequencePlayList);
+      changeCurrentIndexDispatch(index);
+      setModeText("顺序循环");
+    } else if (newMode === 1) {
+      //单曲循环
+      changePlayListDispatch(sequencePlayList);
+      setModeText("单曲循环");
+    } else if (newMode === 2) {
+      //随机播放
+      let newList = shuffle(sequencePlayList);
+      let index = findSongIndex(currentSong, newList);
+      changePlayListDispatch(newList);
+      changeCurrentIndexDispatch(index);
+      setModeText("随机播放");
     }
     changeModeDispatch(newMode);
     toastRef.current.show();
   };
-  const handleError = error => {
+  const handleError = (error) => {
     songReady.current = true;
-    alert("播放出错");
     handleNext();
     console.log(`播放出错：${error}`);
+    alert("播放出错");
   };
-  // 关于业务逻辑的部分都是在父组件完成然后直接传给子组件，而子组件虽然也有自己的状态，但大部分是控制UI层面的，逻辑都是从props中接受， 这也是展示了UI和逻辑分离的组件设计模式
+
+  // 倍速播放功能
+  const clickSpeed = newSpeed => {
+    changeSpeedDispatch(newSpeed);
+    // playbackRate 为歌词播放的速度，可修改
+    audioRef.current.playbackRate = newSpeed;
+    // 并且需要同步歌词
+    currentLyric.current.changeSpeed(newSpeed);
+    currentLyric.current.seek(currentTime * 1000);
+  };
+ // 关于业务逻辑的部分都是在父组件完成然后直接传给子组件，而子组件虽然也有自己的状态，但大部分是控制UI层面的，逻辑都是从props中接受， 这也是展示了UI和逻辑分离的组件设计模式
   return (
     <div>
-      {isPlainObject(currentSong) ? null : (
+      {isEmptyObject(currentSong) ? null : (
         <NormalPlayer
-          mode={mode}
           song={currentSong}
           fullScreen={fullScreen}
           playing={playingState} //播放状态
-          duration={duration} //总时长
-          percent={percent} //进度
+          mode={playMode} // 当前模式
+          percent={percent}
           modeText={modeText} // 当前模式
+          duration={duration} //总时长
           currentTime={currentTime} //当前播放时间
-          speed={speed} // 当前播放速度
           currentLyric={currentLyric.current}
           currentPlayingLyric={currentPlayingLyric}
-          currentLineNum={currentLineNum.current}
-          toggleFullScreen={toggleFullScreenDispatch}
-          togglePlayList={togglePlayListDispatch}
-          clickPlaying={clickPlaying}
-          onProgressChange={onProgressChange}
-          // handleLoop={handleLoop}
+          speed={speed} // 当前播放速度
+          changeMode={changeMode}
           handlePrev={handlePrev}
           handleNext={handleNext}
-          changeMode={changeMode}
-          clickSpeed={clickSpeed} // 倍速播放
-        />
-      )}
-      {isPlainObject(currentSong) ? null : (
-        <MiniPlayer
-          playing={playingState} //播放状态
-          percent={percent}
-          song={currentSong}
-          fullScreen={fullScreen}
+          onProgressChange={onProgressChange}
+          currentLineNum={currentLineNum.current}
+          clickPlaying={clickPlaying}
           toggleFullScreen={toggleFullScreenDispatch}
           togglePlayList={togglePlayListDispatch}
-          clickPlaying={clickPlaying}
-        />
+          clickSpeed={clickSpeed} // 倍速播放
+          // handleLoop={handleLoop}
+        ></NormalPlayer>
       )}
-      <PlayList clearPreSong={setPrevSong.bind(null, {})}></PlayList>
+      {isEmptyObject(currentSong) ? null : (
+        <MiniPlayer
+          playing={playingState}
+          fullScreen={fullScreen}
+          song={currentSong}
+          percent={percent}
+          clickPlaying={clickPlaying}
+          toggleFullScreen={toggleFullScreenDispatch}
+          togglePlayList={togglePlayListDispatch}
+        ></MiniPlayer>
+      )}
+
+      <PlayList clearPreSong={setPreSong.bind(null, {})}></PlayList>
       <audio
-        ref={audioRef}
-        src={getSongUrl((currentSong[0] && currentSong[0].id) || "")}
+        // src={getSongUrl((currentSong[0] && currentSong[0].id) || "")}
         // udio标签在播放的过程中会不断地触发onTimeUpdate事件，在此需要更新currentTime变量。
+        ref={audioRef}
         onTimeUpdate={updateTime}
         // 歌曲播放完毕的回调
         onEnded={handleEnd}
@@ -311,31 +315,49 @@ function Player(props) {
     </div>
   );
 }
+
+// 映射Redux全局的state到组件的props上
 const mapStateToProps = state => ({
   fullScreen: state.getIn(["player", "fullScreen"]),
   playingState: state.getIn(["player", "playingState"]),
-  sequencePlayList: state.getIn(["player", "sequencePlayList"]),
-  playList: state.getIn(["player", "playList"]),
-  playMode: state.getIn(["player", "playMode"]),
-  currentIndex: state.getIn(["player", "currentIndex"]),
-  showPlayList: state.getIn(["player", "showPlayList"]), // 是否展示播放列表
   currentSong: state.getIn(["player", "currentSong"]),
-  speed: state.getIn(["player", "speed"]) // 播放速度
+  showPlayList: state.getIn(["player", "showPlayList"]),
+  playMode: state.getIn(["player", "playMode"]),
+  speed: state.getIn(["player", "speed"]),
+  currentIndex: state.getIn(["player", "currentIndex"]),
+  playList: state.getIn(["player", "playList"]),
+  sequencePlayList: state.getIn(["player", "sequencePlayList"])
 });
-const mapDispatchToProps = dispatch => ({
-  toggleFullScreenDispatch: data => dispatch(actions.changeFullScreen(data)),
-  togglePlayingStateDispatch: data =>
-    dispatch(actions.changePlayingState(data)),
-  togglePlayModeDispatch: data => dispatch(actions.changePlayMode(data)),
-  changeSequencePlayListDispatch: data =>
-    dispatch(actions.changeSequencePlayList(data)),
-  togglePlayListDispatch: data => dispatch(actions.changePlayList(data)),
-  changeCurrentIndexDispatch: data =>
-    dispatch(actions.changeCurrentIndex(data)),
-  changeShowPlayListDispatch: data =>
-    dispatch(actions.changeShowPlayList(data)),
-  changeCurrentSongDispatch: data => dispatch(actions.changeCurrentSong(data)),
-  changeModeDispatch: data => dispatch(actions.changePlayMode(data)),
-  changeSpeedDispatch: data => dispatch(actions.changeSpeed(data)) // 倍速播放
-});
+
+// 映射dispatch到props上
+const mapDispatchToProps = dispatch => {
+  return {
+    togglePlayingDispatch(data) {
+      dispatch(actions.changePlayingState(data));
+    },
+    toggleFullScreenDispatch(data) {
+      dispatch(actions.changeFullScreen(data));
+    },
+    togglePlayListDispatch(data) {
+      dispatch(actions.changeShowPlayList(data));
+    },
+    changeCurrentIndexDispatch(index) {
+      dispatch(actions.changeCurrentIndex(index));
+    },
+    changeCurrentDispatch(data) {
+      dispatch(actions.changeCurrentSong(data));
+    },
+    changeModeDispatch(data) {
+      dispatch(actions.changePlayMode(data));
+    },
+    changePlayListDispatch(data) {
+      dispatch(actions.changePlayList(data));
+    },
+    changeSpeedDispatch(data) {
+      dispatch(actions.changeSpeed(data));
+    }
+  };
+};
+
+// 将ui组件包装成容器组件
 export default connect(mapStateToProps, mapDispatchToProps)(React.memo(Player));

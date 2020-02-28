@@ -10,7 +10,7 @@ import { getCount } from "../../api/utils";
 import { getAlbumDetail } from "./store/actions";
 import { connect } from "react-redux";
 import Loading from "../../baseUI/loading";
-import { isPlainObject } from "../../api/utils";
+import { isEmptyObject } from "../../api/utils";
 import MusicNote from "../../baseUI/music-note";
 function Album(props) {
   const [title, setTitle] = useState("歌单");
@@ -141,7 +141,7 @@ function Album(props) {
           handleClick={handleBack}
           isMarquee={isMarquee}
         />
-        {!isPlainObject(currentAlbum) ? (
+        {!isEmptyObject(currentAlbum) ? (
           <Scroll bounceTop={false} onScroll={handleScroll}>
             <div>
               {renderTopDesc(currentAlbum)}

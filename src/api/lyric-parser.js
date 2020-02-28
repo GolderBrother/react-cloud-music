@@ -2,8 +2,8 @@
  * @Author: GolderBrother 
  * @Email: 1204788939@qq.com 
  * @Date: 2020-02-23 15:43:48 
- * @Last Modified by: GolderBrother
- * @Last Modified time: 2020-02-25 23:44:30
+ * @Last Modified by: yaohuang.zhang
+ * @Last Modified time: 2020-02-27 22:12:58
  * @Description: 传入歌词，按照正则表达式解析 
  * version:1.0.0
  * 解析后的数据结构为：
@@ -74,7 +74,7 @@ export default class Lyric {
 
     //offset 为时间进度，isSeek 标志位表示用户是否手动调整进度
     play(offset = 0, isSeek = false) {
-        if (!this.line.length) return;
+        if (!this.lines.length) return;
         this.state = STATE_PLAYING;
         // 找到当前时间所在的行
         this.currentLineIndex = this._findcurLineIndex(offset);

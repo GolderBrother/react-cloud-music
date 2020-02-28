@@ -11,16 +11,16 @@ import {
 import {
     findSongIndex
 } from '../../../api/utils';
-import {
-    list
-} from './mock';
+// import {
+//     list
+// } from './mock';
 const defaultState = fromJS({
     fullScreen: false, // 播放器是否为全屏模式
     playingState: false, // 当前歌曲是否播放
     sequencePlayList: [], // 顺序列表 (因为之后会有随机模式，列表会乱序，因从拿这个保存顺序列表)
     playList: [],
     playMode: playMode.sequence, // 播放模式
-    currentIndex: 0, // 当前歌曲在播放列表的索引位置
+    currentIndex: -1, // 当前歌曲在播放列表的索引位置
     showPlayList: false, // 是否展示播放列表
     currentSong: {}, // 歌曲信息
     speed: 1 // 播放速度
@@ -40,7 +40,7 @@ const handleDeleteSong = (state, song) => {
     // 如果删除的歌曲排在当前播放歌曲前面，那么 currentIndex--，让当前的歌正常播放
     if (playListIndex < currentIndex) currentIndex--;
     // 找对应歌曲在顺序播放列表中的索引
-    const sequencePlayListIndex = findSongIndex(song, currentIndex);
+    const sequencePlayListIndex = findSongIndex(song, sequencePlayList);
     // 顺序在播放列表中将其删除
     sequencePlayList.splice(sequencePlayListIndex, 1);
     return state.merge({
@@ -81,7 +81,7 @@ const handleInsertSong = (state, song) => {
     // 插入的歌曲在顺序列表中的位置
     const fsIndex = findSongIndex(song, sequencePlayList);
     // 插入歌曲
-    sequencePlayList.splice(currentIndex, 0, song);
+    sequencePlayList.splice(sequenceIndex, 0, song);
     if (fsIndex > -1) {
         // 跟上面类似的逻辑。如果旧的歌曲在前面就删掉，index--; 如果在后面就直接删除
         if (fsIndex < sequenceIndex) {

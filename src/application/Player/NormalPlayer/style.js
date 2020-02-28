@@ -67,7 +67,7 @@ export const Top = styled.div`
     align-items: center;
     margin-bottom: 15px;
     border-bottom: 1px solid ${GlobalStyle["border-color-v2"]};
-    padding-bottom: 5px;
+    padding-bottom: 10px;
     .back {
         margin-left: 5px;
         z-index: 50;
@@ -87,17 +87,13 @@ export const Top = styled.div`
         margin-top: 10px;
     }
     .title {
-        width: 70%;
-        margin: 0 auto;
-        line-height: 40px;
-        text-align: center;
+        line-height: 25px;
         font-size: ${GlobalStyle["font-size-l"]};
         color: ${GlobalStyle["font-color-desc"]};
         ${GlobalStyle.noWrap()};
     }
     .subtitle {
         line-height: 20px;
-        text-align: center;
         font-size: ${GlobalStyle["font-size-m"]};
         color: ${GlobalStyle["font-color-desc-v2"]};
         ${GlobalStyle.noWrap()};
@@ -263,7 +259,7 @@ export const LyricWrapper = styled.div`
     text-align: center;
     p {
         line-height: 32px;
-        color: rgba (255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.5);
         white-space: normal;
         font-size: ${GlobalStyle['font-size-l']};
         &.current {
@@ -284,7 +280,7 @@ export const SpeedList = styled.div`
     height: 30px;
     justify-content: space-around;
     overflow: hidden;
-    >span:first-of-type {
+    >span:first-of-type {s
         display: block;
         flex: 0 0 auto;
         padding: 5px 0;

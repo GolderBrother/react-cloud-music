@@ -1,25 +1,23 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { CSSTransition } from "react-transition-group";
 import animations from "create-keyframe-animation";
 import {
   NormalPlayerContainer,
   Top,
   Middle,
-  CDWrapper,
   Bottom,
+  CDWrapper,
   ProgressWrapper,
-  Operators
-} from "./style";
-import { getName, getPrefixStyle, formatPlayTime } from "../../../api/utils";
-import ProgressBar from "../../../baseUI/progressBar";
-import { playMode, speedList } from "../../../api/config";
-import Scroll from "../../../baseUI/scroll";
-import {
+  Operators,
   LyricContainer,
   LyricWrapper,
   SpeedList,
   SpeedListItem
 } from "./style";
+import { getName, getPrefixStyle, formatPlayTime } from "../../../api/utils";
+import ProgressBar from "../../../baseUI/progressBar";
+import { playMode, speedList } from "../../../api/config";
+import Scroll from "../../../baseUI/scroll";
 function NormalPlayer(props) {
   const {
     song = {},
@@ -48,7 +46,7 @@ function NormalPlayer(props) {
   const cdWrapperRef = useRef();
   // 切换为迷你播放器
   const handleBack = () => toggleFullScreen(false);
-  const currentState = useRef("");
+  const [currentState, setCurrentState] = useState(0);
   const lyricScrollRef = useRef();
   const lyricLineRef = useRef([]);
   const ANIMATION_NAME = "move";
@@ -80,7 +78,7 @@ function NormalPlayer(props) {
   // 进入后的回调，解绑帧动画
   const afterEnter = () => {
     animations.unregisterAnimation(ANIMATION_NAME);
-    normalPlayerRef.current.style.animation = "";
+    cdWrapperRef.current.style.animation = "";
   };
   // 计算偏移的辅助函数
   const _getPosAndScale = () => {
@@ -99,6 +97,7 @@ function NormalPlayer(props) {
       scale
     };
   };
+  //处理transform的浏览器兼容问题
   const transformPrefix = getPrefixStyle("transform");
   // 离开时的回调
   const onLeave = () => {
@@ -122,7 +121,7 @@ function NormalPlayer(props) {
     // 不置为 none 现在全屏播放器页面还是存在
     normalPlayerRef.current.style.display = "none";
     // 推出播放界面后，要还原歌词状态
-    currentState.current = "";
+    setCurrentState("");
   };
   // 获取播放模式
   const getPlayMode = () => {
@@ -148,10 +147,11 @@ function NormalPlayer(props) {
   };
   // 切换当前是否显示歌词状态
   const toggleCurrentState = () => {
-    const isLyric = currentState.current === "lyric";
-    currentState.current = isLyric ? "" : "lyric";
+    let nextState = "";
+    nextState = currentState === "lyric" ? "" : "lyric";
+    console.log('nextState', nextState);
+    setCurrentState(nextState);
   };
-  const isLyric = currentState.current === "lyric";
   // 监听 currentLineNum 变量，当它改变时，来进行一些歌词滚动操作。
   // 这样子父组件 currentLine 改变后， normalPlayer 的歌词就需要滚动到相应位置。
   useEffect(() => {
@@ -168,6 +168,7 @@ function NormalPlayer(props) {
       bScroll.scrollTo(0, 0, 1000);
     }
   }, [currentLineNum]);
+  const isLyric = currentState === "lyric";
   return (
     <CSSTransition
       classNames={"normal"}
@@ -200,8 +201,8 @@ function NormalPlayer(props) {
         </Top>
         <Middle ref={cdWrapperRef} onClick={toggleCurrentState}>
           <CSSTransition timeout={400} in={!isLyric} classNames={"fade"}>
-            {/* currentState.current -> lyric：显示所有歌词，否则只是显示一行歌词  */}
-            <CDWrapper styles={{ visibility: !isLyric ? "visible" : "hidden" }}>
+            {/* currentState -> lyric：显示所有歌词，否则只是显示一行歌词  */}
+            <CDWrapper style={{ visibility: !isLyric ? "visible" : "hidden" }}>
               <div className={`needle ${playing ? "" : "pause"}`}></div>
               <div className="cd">
                 <img
@@ -251,7 +252,7 @@ function NormalPlayer(props) {
             {speedList.map((item, index) => (
               <SpeedListItem
                 key={item.key}
-                className={speed === index ? "selected" : ""}
+                className={speed === item.key ? "selected" : ""}
                 onClick={() => clickSpeed(item.key)}
               >
                 {item.name}
