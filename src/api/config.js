@@ -2,7 +2,8 @@ import axios from 'axios';
 const base_URL = 'http://localhost:8091';
 
 const axiosInstance = axios.create({
-    baseURL: base_URL
+    baseURL: base_URL,
+    timeout: 50000, // 请求超时时间
 });
 
 axiosInstance.interceptors.request.use(config => config, error => Promise.reject(error));
