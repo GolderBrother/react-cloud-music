@@ -107,7 +107,10 @@ function Singer(props) {
 
   因为目前元素的 display 虽然变为了 inline-block, 但是元素显示出来需要・浏览器的回流 过程，无法立即显示。 也就是说元素目前还是 隐藏 的，那么 元素的位置未知，导致 transform 失效
   用 setTimout 的本质将动画逻辑放到下一次的 宏任务。事实上，当本次的宏任务完成后， 会触发 浏览器 GUI 渲染线程 的重绘工作，然后才执行下一次宏任务，那么下一次宏任务中元素就显示了，transform 便能生效 */
-
+  const handleCollect = e => {
+    e.stopPropagation();
+    alert('客官稍等，小二正在赶来的路上...');
+  }
   return (
     <CSSTransition
       in={showStatus}
@@ -126,7 +129,7 @@ function Singer(props) {
         <ImgWrapper bgUrl={artist.picUrl} ref={imgWrapperRef}>
           <div className="filter"></div>
         </ImgWrapper>
-        <CollectButton ref={collectButtonRef}>
+        <CollectButton ref={collectButtonRef} onClick={handleCollect}>
           <i className="iconfont">&#xe62d;</i>
           <span className="text"> 收藏 </span>
         </CollectButton>

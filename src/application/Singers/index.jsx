@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useRef, useEffect } from "react";
 import LazyLoad, { forceCheck } from "react-lazyload";
 import Horizen from "../../baseUI/horizen-item";
 import Scroll from "../../baseUI/scroll";

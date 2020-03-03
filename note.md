@@ -20,6 +20,8 @@ part 26 done 2020.2.19
 
 part 28 done 2020.2.21
 
+end deploy 2020.3.3
+
 ### next
 
 ### 尽管 hooks 能模拟 redux 的核心功能，但是能够取代 redux 这件事我不敢苟同
@@ -39,4 +41,19 @@ TODO
 - 歌词显示还有问题(已修复)
 - 进度条拖动有问题(已修复)
 - 搜索功能待完善(已完善)
-- 播放器歌词可以根据播放到每个字的进度加顔色
+- 播放器歌词可以根据播放到每个字的进度加顔色(待完善)
+
+运行：
+
+```bash
+npm run dev-start or yarn dev-start
+```
+
+部署：
+
+```bash
+npm run prod-start or yarn prod-start
+```
+
+目前前端端口：`8090`
+api端口：`4000`

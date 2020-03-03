@@ -60,7 +60,6 @@ const SongList = React.forwardRef((props, ref) => {
   };
   const renderCollect = count => {
     const handleCollect = e => {
-      console.log('客官稍等，小二正在赶来的路上')
       alert("客官稍等，小二正在赶来的路上...");
     };
     return (
