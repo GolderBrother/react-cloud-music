@@ -31,8 +31,9 @@
   },
   "scripts": {
     "start:client": "npm run start",
-    "start:server": "pm2 node-server.js",
-    "start": "react-scripts start",
+    "start:server": "pm2 start node-server.js",
+    "start": "pm2 start node-server.js",
+    "start2": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
