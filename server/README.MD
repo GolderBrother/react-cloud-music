@@ -186,13 +186,13 @@ $ node app.js
 服务器启动默认端口为 3000,若不想使用 3000 端口,可使用以下命令: Mac/Linux
 
 ```shell
-$ PORT=4000 node app.js
+$ PORT=8091 node app.js
 ```
 
 windows 下使用 git-bash 或者 cmder 等终端执行以下命令:
 
 ```shell
-$ set PORT=4000 && node app.js
+$ set PORT=8091 && node app.js
 ```
 
 ## 使用文档
