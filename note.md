@@ -2,6 +2,8 @@
 
 - redux-immutable 大家可能比较陌生，因为项目中需要用到 immutable.js 中的数据结构，所以合并不同模块 reducer 的时候需要用到 redux-immutable 中的方法
 
+[预览地址](http://golderbrother.cn:8090/#/recommend)
+
 ## progress
 
 part 5 done
