@@ -6,7 +6,8 @@ const request = require('./util/request')
 const packageJSON = require('./package.json')
 const exec = require('child_process').exec
 const cache = require('apicache').middleware
-
+ // 坑！！！如果您的6000端口需要通过公网访问，需要将监听地址修改为0.0.0.0
+process.env.HOST = '0.0.0.0'
 // version check
 exec('npm info NeteaseCloudMusicApi version', (err, stdout, stderr) => {
   if(!err){
