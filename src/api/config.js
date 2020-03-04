@@ -1,8 +1,9 @@
 import axios from 'axios';
 const base_URL = 'http://localhost:8091';
+const base_URL_PROD = 'http://116.62.6.228:8091';
 
 const axiosInstance = axios.create({
-    baseURL: base_URL,
+    baseURL: base_URL_PROD,
     timeout: 50000, // 请求超时时间
 });
 
