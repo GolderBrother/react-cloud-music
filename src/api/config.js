@@ -1,7 +1,7 @@
 import axios from 'axios';
 const base_URL = 'http://localhost:8091';
 const base_URL_PROD = 'http://116.62.6.228:8091';
-const base_URL_PROD = 'http://golderbrother.cn:8091';
+// const base_URL_PROD = 'http://golderbrother.cn:8091';
 
 const axiosInstance = axios.create({
     baseURL: base_URL_PROD,
