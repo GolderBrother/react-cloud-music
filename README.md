@@ -2,7 +2,7 @@
 
 > 采用React Hooks + Redux + immutable.js打造完整前端工作流，进阶前端综合能力
 
-猛戳 -> [在线体验地址](http://golderbrother.cn:8090/#/recommend)
+猛戳 -> [在线体验地址](http://golderbrother.cn:8092/#/recommend)
 > 移动端和PC端的chrome浏览器食用更佳 
 
 ## 食用方式：
@@ -59,7 +59,7 @@ $ npm run dev-start or yarn dev-start
 $ npm run prod-start or yarn prod-start
 ```
 
-前端端口：`8090`
+前端端口：`8092`
 api端口：`8091`
 
 ## 项目介绍:
